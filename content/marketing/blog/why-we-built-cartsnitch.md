@@ -1,66 +1,81 @@
 ---
-title: "Why We Built CartSnitch: Your Grocery Bill Shouldn't Be a Mystery"
+title: "Why We Built CartSnitch"
 slug: why-we-built-cartsnitch
-date: 2026-03-22
-author: CartSnitch Team
-category: Company
-tags: [launch, grocery prices, transparency, shrinkflation]
 status: draft
-description: "Grocery prices have risen 25% since 2020, but tracking what you actually pay — and whether you're getting a fair deal — has been nearly impossible. Until now."
+version: 1.0
+last_updated: 2026-03-20
+description: "The story behind CartSnitch — why grocery price tracking matters, what shrinkflation is doing to household budgets, and why we think consumers deserve better tools."
+tags: ["about", "shrinkflation", "founder-story"]
 ---
 
-# Why We Built CartSnitch: Your Grocery Bill Shouldn't Be a Mystery
+# Why We Built CartSnitch
 
-You know the feeling. You're at the register, the total pops up, and it's... more than you expected. Again. You could swear that box of cereal was $3.49 last month. Was it? You can't remember. You can't prove it. And that's exactly how it's designed to work.
+A few years ago, one of our founders was doing the weekly grocery run at Kroger. She had been buying the same box of pasta for years — same brand, same shelf, roughly the same price. But something felt off. The box looked identical. The price was actually down a little. But the pasta was gone faster than usual.
 
-## The numbers don't lie — your gut is right
+She checked. The box had gone from 16 oz to 13.25 oz. The price had dropped from $1.89 to $1.79. The price per ounce had gone up 15%.
 
-According to the Bureau of Labor Statistics, grocery prices have risen **25% since January 2020**. The USDA's food price outlook for 2026 projects another 2-4% increase this year alone. But those are averages. The reality at the shelf is messier:
+She had been buying less and paying more, and she had no idea.
 
-- **Eggs** surged over 70% in 2023, dropped, then climbed again in early 2026.
-- **Snack foods** have seen steady 8-12% annual increases — often masked by shrinking package sizes.
-- **Store-brand products**, once the reliable budget option, have seen price increases outpacing name brands in some categories.
-
-The problem isn't just that prices go up. It's that you have no way to track *your* prices, at *your* stores, on the products *you* actually buy.
-
-## The shrinkflation problem nobody talks about
-
-Here's something that won't show up in inflation statistics: your favorite ice cream went from 1.75 quarts to 1.5 quarts. Same price. Same shelf space. Same packaging design — just slightly shorter if you look closely.
-
-This is shrinkflation, and it's everywhere:
-
-- **Cereals** have lost 1-3 oz per box across major brands since 2021
-- **Toilet paper** rolls have fewer sheets (some brands dropped from 1,000 to 900 sheets per mega roll)
-- **Chip bags** contain more air and less product — sometimes 2+ oz less than the same SKU two years ago
-- **Detergent** loads-per-bottle claims have quietly decreased while prices held steady or increased
-
-Inflation numbers don't capture this. Your receipt doesn't show it. But your grocery budget feels it — an invisible 10-15% price increase that nobody is tracking.
-
-## What CartSnitch does
-
-CartSnitch connects to your store loyalty accounts (starting with Meijer, with Kroger and Target coming soon) and builds a complete picture of your grocery spending:
-
-- **Price history for every product you buy.** See exactly how much that gallon of milk cost three months ago vs. today.
-- **Store comparison.** The same item at two stores 0.3 miles apart can differ by $1 or more. We show you where.
-- **Shrinkflation alerts.** When a product's package size decreases, we flag it — so you know you're paying more per ounce even if the sticker price didn't change.
-- **Price drop notifications.** Set a target price and we'll let you know when it hits.
-
-No manual entry. No scanning barcodes. Just connect your loyalty account and we do the rest.
-
-## Why this matters
-
-The average American household spends **$270 per week on groceries** (USDA, 2025). That's over $14,000 a year. Even small optimizations — switching stores for key items, timing purchases around price drops, catching shrinkflation before it eats your budget — can save hundreds annually.
-
-But you can't optimize what you can't see. And right now, the data asymmetry is massive: retailers and brands have detailed analytics on every price change, promotion, and package adjustment. Consumers have... a fading memory of what they paid last time.
-
-CartSnitch flips that equation. We give consumers the same price intelligence that retailers have always had.
-
-## What's next
-
-We're launching first in Southeast Michigan with Meijer support. Kroger and Target follow within weeks. If you want to be among the first to track your grocery prices and catch shrinkflation in real time, [sign up for early access](#).
-
-Your grocery bill shouldn't be a mystery. Let's fix that.
+That is shrinkflation. And it turns out it is everywhere.
 
 ---
 
-*CartSnitch is a consumer price transparency tool. We track prices from public loyalty account data with your permission. We never sell your data. [Learn more about our privacy approach](#).*
+## The Invisible Price Increase
+
+Shrinkflation is what happens when a brand reduces the size or quantity of a product while keeping the price the same — or close to it. The box looks identical. The shelf tag barely moves. But you are getting less for your money.
+
+It is legal. It is common. And it is almost impossible to detect without tracking unit prices over time.
+
+Between 2022 and 2025, hundreds of everyday grocery products quietly shrank. Chips bags. Cereal boxes. Coffee cans. Paper towels. Toilet paper. The pattern was consistent: brands absorbed cost increases not by raising the sticker price — which consumers notice — but by reducing quantity, which most consumers do not.
+
+The Federal Trade Commission flagged it. Consumer Reports documented it. Shoppers felt it in their grocery bills without being able to point to exactly why.
+
+---
+
+## What Existing Tools Get Wrong
+
+There are apps that help with grocery prices. Most of them solve a different problem.
+
+Coupon apps and cash-back tools are built around deals. They show you what is on sale this week. That is useful — but a sale price is not the same as a fair price. A 10% off coupon on a product that shrank 15% is not a deal. It is a marketing move.
+
+Crowd-sourced price trackers require you to scan receipts or enter prices manually. Most people do not do this consistently. And even when they do, the data reflects what the community submitted — not what you personally paid.
+
+None of these tools answer the question that actually matters: compared to what I paid six months ago, am I paying more for this product today?
+
+---
+
+## What CartSnitch Does Differently
+
+CartSnitch connects to your existing store loyalty accounts — mPerks for Meijer, Kroger Plus for Kroger, Target Circle for Target. When you shop, your purchase history flows in automatically. No scanning. No manual entry. No behavior change.
+
+From that data, CartSnitch tracks three things:
+
+**Your price history.** What you actually paid for each item, over time. Not the store advertised price. Your price.
+
+**Unit prices.** Price per ounce, price per count, price per unit — whatever is appropriate for the product. When the box shrinks and the price stays flat, the unit price goes up. CartSnitch catches this automatically.
+
+**Price comparison across your stores.** If you shop at Kroger and Meijer, CartSnitch shows you what each item costs at each store, so you can make informed decisions about where to shop.
+
+You do not have to do anything differently. Connect your loyalty accounts once, and CartSnitch works in the background.
+
+---
+
+## Who This Is For
+
+CartSnitch is built for anyone whose grocery bill has gone up — which is most people — and who wants to understand why.
+
+It is for the shopper who has a feeling that something changed but cannot put a number on it. It is for the household that is spending $20 more per week at the grocery store and does not know if that is inflation, shrinkflation, or just buying different things.
+
+It is not for couponers looking for their next deal. There are better tools for that. CartSnitch is for people who want to understand their actual spending, over time, with real data.
+
+---
+
+## Where We Are
+
+CartSnitch is launching public beta on April 24, 2026. Three stores at launch: Meijer, Kroger, and Target. More on the roadmap.
+
+It is free. No subscription. No trial period. You connect your loyalty account, and CartSnitch starts tracking.
+
+If you have been watching your grocery bill and wondering where the money is going, that is exactly what we built this for.
+
+[Join the beta — launching April 24.]
