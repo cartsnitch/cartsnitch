@@ -1,13 +1,13 @@
 ---
-title: "Shrinkflation Report: Your Frozen Pizza Shrank and Your Ice Cream Did Too"
+title: "The Shrinkflation Files: Frozen Food"
 slug: shrinkflation-frozen-food-2026
-date: 2026-04-29
-author: CartSnitch Team
-category: Shrinkflation Report
-tags: [shrinkflation, frozen food, ice cream, frozen pizza, grocery prices]
 status: draft
-series: shrinkflation-case-studies
+version: 1.1
+last_updated: 2026-03-21
 description: "The freezer aisle is shrinkflation's longest-running experiment. Ice cream lost a quarter of its volume over 15 years. Frozen pizzas are lighter. And frozen dinners cost more per ounce than fresh ingredients."
+tags: ["shrinkflation", "frozen-food", "ice-cream", "grocery-prices", "data"]
+series: "The Shrinkflation Files"
+series_part: 3
 ---
 
 # Shrinkflation Report: Your Frozen Pizza Shrank and Your Ice Cream Did Too
@@ -103,4 +103,4 @@ That's the pattern playing out right now across frozen pizza, frozen meals, and 
 
 ---
 
-*This is the fifth and final case study in our launch series of CartSnitch Shrinkflation Reports. Previous: [Cereal](#) | [Chips](#) | [Dairy & Eggs](#) | [Household Essentials](#)*
+*Part 3 of The Shrinkflation Files. [Part 2: Dairy and Eggs](/blog/shrinkflation-dairy-eggs-2026) | Up next: [Part 4: Household Essentials](/blog/shrinkflation-household-essentials-2026)*
