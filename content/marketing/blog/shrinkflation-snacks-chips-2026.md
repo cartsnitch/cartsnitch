@@ -1,13 +1,13 @@
 ---
-title: "Shrinkflation Report: The Incredible Shrinking Chip Bag"
+title: "The Shrinkflation Files: Snacks and Chips"
 slug: shrinkflation-snacks-chips-2026
-date: 2026-04-08
-author: CartSnitch Team
-category: Shrinkflation Report
-tags: [shrinkflation, snacks, chips, grocery prices]
 status: draft
-series: shrinkflation-case-studies
-description: "Chip bags are bigger than ever — but the chips inside keep disappearing. We tracked package weights across 12 major snack brands."
+version: 1.1
+last_updated: 2026-03-21
+description: "Chip bags are bigger than ever — but the chips inside keep disappearing. We tracked package weights across 12 major snack brands and the numbers are stark."
+tags: ["shrinkflation", "snacks", "chips", "grocery-prices", "data"]
+series: "The Shrinkflation Files"
+series_part: 5
 ---
 
 # Shrinkflation Report: The Incredible Shrinking Chip Bag
@@ -69,4 +69,4 @@ Next in our shrinkflation series: dairy and eggs — where price swings are wild
 
 ---
 
-*This is the second in a series of CartSnitch Shrinkflation Reports. See also: [Your cereal box lost 2 ounces this year](#).*
+*Part 5 of The Shrinkflation Files. [Part 4: Household Essentials](/blog/shrinkflation-household-essentials-2026) | [Start from the beginning: Part 1, Cereal](/blog/shrinkflation-cereal-2026)*

@@ -1,13 +1,13 @@
 ---
-title: "Shrinkflation Report: Fewer Sheets, Same Price — The Household Essentials Squeeze"
+title: "The Shrinkflation Files: Household Essentials"
 slug: shrinkflation-household-essentials-2026
-date: 2026-04-22
-author: CartSnitch Team
-category: Shrinkflation Report
-tags: [shrinkflation, household, paper towels, detergent, toilet paper, grocery prices]
 status: draft
-series: shrinkflation-case-studies
+version: 1.1
+last_updated: 2026-03-21
 description: "Toilet paper has fewer sheets. Detergent does fewer loads. Paper towels are thinner. We tracked the household essentials aisle and the numbers are stark."
+tags: ["shrinkflation", "household", "paper-towels", "detergent", "grocery-prices", "data"]
+series: "The Shrinkflation Files"
+series_part: 4
 ---
 
 # Shrinkflation Report: Fewer Sheets, Same Price — The Household Essentials Squeeze
@@ -99,4 +99,4 @@ But the data doesn't lie. And now you have it.
 
 ---
 
-*This is the fourth in a series of CartSnitch Shrinkflation Reports. Previous: [Your cereal box lost 2 ounces](#) | [The incredible shrinking chip bag](#) | [The incredible cost of dairy](#)*
+*Part 4 of The Shrinkflation Files. [Part 3: Frozen Food](/blog/shrinkflation-frozen-food-2026) | Up next: [Part 5: Snacks and Chips](/blog/shrinkflation-snacks-chips-2026)*

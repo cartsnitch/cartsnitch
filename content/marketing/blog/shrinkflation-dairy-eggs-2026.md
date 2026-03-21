@@ -1,13 +1,13 @@
 ---
-title: "Shrinkflation Report: The Incredible Cost of Eggs, Milk, and Yogurt in 2026"
+title: "The Shrinkflation Files: Dairy and Eggs"
 slug: shrinkflation-dairy-eggs-2026
-date: 2026-04-15
-author: CartSnitch Team
-category: Shrinkflation Report
-tags: [shrinkflation, dairy, eggs, milk, yogurt, grocery prices]
 status: draft
-series: shrinkflation-case-studies
+version: 1.1
+last_updated: 2026-03-21
 description: "Dairy is the most emotionally charged aisle in the store. Egg prices swing wildly, yogurt containers keep shrinking, and milk pricing defies logic. We tracked the numbers."
+tags: ["shrinkflation", "dairy", "eggs", "grocery-prices", "data"]
+series: "The Shrinkflation Files"
+series_part: 2
 ---
 
 # Shrinkflation Report: The Incredible Cost of Eggs, Milk, and Yogurt in 2026
@@ -95,4 +95,4 @@ The data is clear. The question is whether consumers have access to it. That's w
 
 ---
 
-*This is the third in a series of CartSnitch Shrinkflation Reports. Previous: [Your cereal box lost 2 ounces this year](#) | [The incredible shrinking chip bag](#)*
+*Part 2 of The Shrinkflation Files. [Part 1: Cereal](/blog/shrinkflation-cereal-2026) | Up next: [Part 3: Frozen Food](/blog/shrinkflation-frozen-food-2026)*
