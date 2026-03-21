@@ -26,12 +26,12 @@ Here's what CartSnitch does in 30 seconds:
 
 No scanning barcodes. No manual entry. Just connect your store loyalty account and we do the rest.
 
-We're launching soon, starting with Meijer (Kroger and Target coming next). You're on the list to get early access.
+Beta launches April 24. You're on the list for early access. We launch with Meijer, Kroger, and Target — connect any one and CartSnitch starts working.
 
 In the meantime, we've been doing some digging. Check out what we found:
 
-→ [Your cereal box lost 2 ounces this year](#)
-→ [The incredible shrinking chip bag](#)
+→ [Your cereal box lost 2 ounces this year](/blog/shrinkflation-cereal-2026)
+→ [The incredible shrinking chip bag](/blog/shrinkflation-snacks-chips-2026)
 
 More data coming soon. We'll keep you posted.
 
@@ -66,10 +66,10 @@ CartSnitch flips that equation. We give you the same price intelligence retailer
 
 Here's what that looks like in practice:
 
-→ [The incredible cost of eggs, milk, and yogurt in 2026](#)
-→ [Fewer sheets, same price — the household essentials squeeze](#)
+→ [The incredible cost of eggs, milk, and yogurt in 2026](/blog/shrinkflation-dairy-eggs-2026)
+→ [Fewer sheets, same price — the household essentials squeeze](/blog/shrinkflation-household-essentials-2026)
 
-We're building this for you. Launch is coming soon, and you'll be among the first to try it.
+We're building this for you. Beta launches April 24 — you'll be among the first.
 
 — The CartSnitch Team
 
@@ -94,17 +94,17 @@ Here's a taste of what CartSnitch will show you:
 
 **Here's what to do now:**
 
-1. **Make sure you have a Meijer loyalty account** (Meijer mPerks). That's our launch store. Kroger and Target are coming fast.
+1. **Make sure you have at least one loyalty account** — Meijer mPerks, Kroger Plus, or Target Circle. All three stores are live at launch on April 24.
 2. **Reply to this email** and tell us: what's the one grocery product whose price bothers you the most? We'll prioritize tracking it.
 3. **Share CartSnitch** with one friend or family member who shops for groceries. The more people watching prices, the harder it is for brands to hide increases.
 
-We'll email you the moment early access opens. It's soon.
+We'll email you the moment early access opens — April 24.
 
 Your grocery bill shouldn't be a mystery. We're almost ready to prove it.
 
 — The CartSnitch Team
 
-*P.S. Missed our shrinkflation reports? Start here: [Your frozen pizza shrank and your ice cream did too](#)*
+*P.S. Missed our shrinkflation reports? Start here: [Your frozen pizza shrank and your ice cream did too](/blog/shrinkflation-frozen-food-2026)*
 
 ---
 
