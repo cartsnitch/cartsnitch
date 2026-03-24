@@ -52,9 +52,9 @@ In every case, the per-unit cost increased even when the shelf price did not cha
 
 ## How Much Does Shrinkflation Cost the Average Family?
 
-Estimates vary by shopping habits and product categories. Analysis of USDA FoodData Central and manufacturer packaging data suggests the average US household spends an additional $80–$120 per year on cereals alone due to shrinkflation. Across all categories — snacks, dairy, household goods, beverages — total hidden costs per household are estimated at $300–$500 per year.
+Estimates vary by shopping habits and product categories. CartSnitch analysis of manufacturer packaging data suggests the average US household spends an additional $80–$120 per year on cereals alone due to shrinkflation. Across all categories — snacks, dairy, household goods, beverages — total hidden costs per household are estimated at $300–$500 per year.
 
-These figures are directional estimates based on publicly available data, not CartSnitch production data.
+These figures are directional estimates based on publicly available manufacturer packaging data, not CartSnitch production data.
 
 ---
 
