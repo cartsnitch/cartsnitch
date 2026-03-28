@@ -76,7 +76,7 @@ Three ways to catch shrinkflation before you overpay:
 
 1. **Track unit prices** — Divide the shelf price by the size (oz, g, count). If the unit price goes up but the product looks the same, you are being shrunk.
 2. **Compare across brands** — A competing brand may offer more product for the same or lower price.
-3. **Use CartSnitch** — CartSnitch monitors unit prices across thousands of products and alerts you when a product you buy regularly gets smaller or more expensive.
+3. **Use CartSnitch** — CartSnitch monitors unit prices on your tracked products and alerts you when a product you buy regularly gets smaller or more expensive.
 
 ---
 
