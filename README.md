@@ -1,73 +1,45 @@
-# React + TypeScript + Vite
+# CartSnitch Monorepo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+CartSnitch is a self-hosted grocery price intelligence platform. This repo consolidates the core services and the flagship frontend PWA.
 
-Currently, two official plugins are available:
+## Services
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Directory | Service | Purpose |
+|-----------|---------|---------|
+| `/` (root) | **Frontend** | React 18 PWA — mobile-first price intelligence UI |
+| `api/` | **API Gateway** | FastAPI — frontend-facing REST API |
+| `common/` | **Common** | Shared Python models, schemas, Alembic migrations |
+| `receiptwitness/` | **ReceiptWitness** | Purchase ingestion via retailer scrapers |
 
-## React Compiler
+## Quick Start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Frontend (root)
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # production build
+npm run test       # unit tests (Vitest)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Python Services
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Each Python service uses [uv](https://github.com/astral-sh/uv) and has its own `pyproject.toml`:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd api             # or common / receiptwitness
+uv sync
+uv run pytest
 ```
+
+## Development Workflow
+
+- **Never push directly to main.** Always open a PR from a feature branch.
+- Branch naming: `feature/<description>` or `fix/<description>`
+- Conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`
+
+## Architecture
+
+For full details see [CLAUDE.md](./CLAUDE.md) or the per-service `CLAUDE.md` in each subdirectory.
+
+CartSnitch is a polyrepo-style monorepo: each service can be built and deployed independently, but sharing code between `common/` and the other Python services is done via local path dependencies in `pyproject.toml`.
