@@ -10,10 +10,15 @@ const pool = new Pool({
     "postgresql://cartsnitch:cartsnitch@localhost:5432/cartsnitch",
 });
 
+const secret = process.env.BETTER_AUTH_SECRET;
+if (!secret) {
+  throw new Error("BETTER_AUTH_SECRET environment variable is required");
+}
+
 export const auth = betterAuth({
   database: pool,
   basePath: "/auth",
-  secret: process.env.BETTER_AUTH_SECRET ?? "change-me-in-production-min-32-chars!!",
+  secret,
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3001",
 
   emailAndPassword: {
