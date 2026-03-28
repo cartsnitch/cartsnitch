@@ -1,20 +1,25 @@
-# CartSnitch Frontend
+# CartSnitch Monorepo
 
 ## Project Context
 
-CartSnitch is a self-hosted grocery price intelligence platform built as a polyrepo microservices architecture. This repo (`cartsnitch/cartsnitch`) is the mobile-first Progressive Web App — the flagship repo and primary user interface.
+CartSnitch is a self-hosted grocery price intelligence platform. This repo (`cartsnitch/cartsnitch`) is the **monorepo** containing the flagship frontend PWA and core backend services.
 
 **GitHub org:** github.com/cartsnitch
 **Domain:** cartsnitch.com
 
-### CartSnitch Services
+### Monorepo Layout
+
+| Directory | Service | Purpose |
+|-----------|---------|---------|
+| `/` (root) | Frontend | React PWA, mobile-first (this directory) |
+| `api/` | API Gateway | Frontend-facing REST API |
+| `common/` | Common | Shared Python models, schemas, Alembic migrations |
+| `receiptwitness/` | ReceiptWitness | Purchase data ingestion via retailer scrapers |
+
+### Other CartSnitch Repos (still separate)
 
 | Repo | Service | Purpose |
 |------|---------|---------|
-| `cartsnitch/common` | — | Shared models, schemas, utilities |
-| `cartsnitch/receiptwitness` | ReceiptWitness | Purchase data ingestion via retailer scrapers |
-| `cartsnitch/api` | API Gateway | Frontend-facing REST API |
-| `cartsnitch/cartsnitch` | Frontend | React PWA, mobile-first (this repo) |
 | `cartsnitch/stickershock` | StickerShock | Price increase detection & CPI comparison |
 | `cartsnitch/shrinkray` | ShrinkRay | Shrinkflation monitoring |
 | `cartsnitch/clipartist` | ClipArtist | Coupon/deal watching & shopping optimization |
