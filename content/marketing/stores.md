@@ -8,6 +8,20 @@ We're actively expanding coverage. If your store isn't listed, you can request i
 
 ## Currently Supported
 
+### Meijer
+**Status:** Full coverage
+**Available data:**
+- Real-time shelf prices
+- Unit prices by product
+- Your purchase history (when connected)
+- Store-specific pricing
+
+**Supported regions:** Midwest (Meijer and Meijer Express)
+
+**Note:** Connect your Meijer account through our secure loyalty program integration.
+
+---
+
 ### Kroger
 **Status:** Full coverage
 **Available data:**
@@ -22,7 +36,7 @@ We're actively expanding coverage. If your store isn't listed, you can request i
 
 ---
 
-### Safeway
+### Target
 **Status:** Full coverage
 **Available data:**
 - Real-time shelf prices
@@ -30,28 +44,23 @@ We're actively expanding coverage. If your store isn't listed, you can request i
 - Your purchase history (when connected)
 - Store-specific pricing
 
-**Supported regions:** West Coast and Mid-Atlantic (Albertsons, Safeway, Vons, Jewel-Osco, ACME)
+**Supported regions:** Nationwide
 
-**Note:** Connect your Safeway or affiliated store account through our secure loyalty program integration.
+**Note:** Connect your Target account through our secure loyalty program integration.
 
 ---
 
-## Coming Soon
+## Evaluating Additional Stores
 
-We're actively working on adding:
-- **Target** — ETA: Q2 2026
-- **Walmart** — Research phase
-- **Whole Foods** — Research phase
-- **Costco** — Technical assessment
-- **Trader Joe's** — Research phase
+We're always evaluating new retailers based on user demand. We can't commit to specific stores or timelines yet — but if there's a retailer you'd like us to prioritize, let us know.
 
-Want us to prioritize a store? [Submit your request →]
+[Submit a store request →]
 
 ---
 
 ## How Store Coverage Works
 
-CartSnitch connects to stores through their loyalty program APIs. When you connect your store account, we read your purchase history and current pricing data — without ever seeing your login credentials.
+When you connect your store account, CartSnitch reads your purchase history and current pricing data from your loyalty account — without ever seeing your login credentials. We use read-only access to your loyalty account data.
 
 **What you get when your store is supported:**
 - Personalized price alerts on products you buy

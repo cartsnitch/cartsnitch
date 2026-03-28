@@ -52,13 +52,13 @@ We're a small team. We care about this problem. We use the product ourselves.
 - **Consumer-first.** Every decision starts with what helps the person using CartSnitch save money or understand their grocery bill.
 - **Data-backed.** Every claim we make is backed by numbers. We track unit prices, not shelf prices.
 - **Transparent.** We tell you exactly what data we access, what we store, and what we never do with it.
-- **Honest about scope.** CartSnitch tracks shrinkflation. Price gouging monitoring is on our roadmap but not yet built.
+- **Honest about scope.** CartSnitch focuses on shrinkflation detection. Price gouging monitoring is not currently in scope.
 
 ---
 
 ## The Data
 
-Our shrinkflation rankings and unit price calculations are based on publicly available manufacturer packaging data and USDA FoodData Central. As we grow, we'll publish our methodology so anyone can verify our numbers.
+Our shrinkflation rankings and unit price calculations are based on publicly available manufacturer packaging data. USDA FoodData Central provides reference data for package sizing baselines. As we grow, we'll publish our methodology so anyone can verify our numbers.
 
 Production data will refine and validate our estimates. We will always note when statistics are directional versus based on real transaction data.
 

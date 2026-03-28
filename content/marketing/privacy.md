@@ -40,7 +40,7 @@ We **do not store**:
 ## What We Never Do
 
 - **We never sell your data.** Your data is never a product. We don't license it, share it with third parties, or use it for advertising.
-- **We never see your login credentials.** Our store integrations use secure OAuth connections — we never have access to your store password.
+- **We never see your login credentials.** We use a read-only connection to your store loyalty account — we never have access to your store password.
 - **We never post to your social accounts or profile.**
 - **We never use your purchase data for anything other than the CartSnitch service.**
 
@@ -70,7 +70,7 @@ That's it.
 ## Security
 
 - All data is encrypted in transit and at rest
-- We use industry-standard OAuth for store connections — never your store password
+- We use read-only connections to store loyalty accounts — we never see your store password
 - Our team follows strict access controls — only the engineers who need your data to build the product can access it
 
 ---

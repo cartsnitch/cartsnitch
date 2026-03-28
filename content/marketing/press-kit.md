@@ -23,7 +23,7 @@ CartSnitch tracks unit prices (price ÷ size) across thousands of grocery produc
 
 **Status:** Beta (April 24, 2026)
 **Availability:** Web app / PWA
-**Supported stores:** Kroger, Safeway (with more coming)
+**Supported stores:** Meijer, Kroger, and Target
 
 ---
 
@@ -53,14 +53,14 @@ Unlike price gouging, which is illegal during emergencies in many states, shrink
 
 ---
 
-## Statistics (Directional — Based on USDA FoodData Central and Manufacturer Data)
+## Statistics (Directional — Based on CartSnitch Analysis of Manufacturer Packaging Data)
 
 - Average family loses **$300–$500/year** to shrinkflation across all grocery categories
 - Cereals specifically: **$80–$120/year** per family
 - Family cereal boxes shrank an average of **12–16%** in oz between 2020–2025
 - Top shrinkflation offenders in 2021–2025: Lay's (28%), Yoplait (27.5%), Cocoa Puffs (27%), Ruffles (23.6%), Cheerios (21.5%)
 
-*Note: All statistics are based on publicly available manufacturer packaging data and USDA FoodData Central. Production data will refine these figures.*
+*Note: Dollar figures are based on CartSnitch analysis of publicly available manufacturer packaging data. USDA FoodData Central provides reference data for package sizing baselines. Production data will refine these figures.*
 
 ---
 

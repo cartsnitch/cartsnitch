@@ -21,7 +21,7 @@ You're not imagining it. It's called shrinkflation — and it's costing the aver
 CartSnitch helps you catch it.
 
 **What CartSnitch does:**
-- Tracks unit prices on thousands of grocery products
+- Tracks unit prices on grocery products
 - Alerts you when a product you buy regularly gets smaller or more expensive
 - Compares your total grocery bill across stores so you always know where to shop cheapest
 
@@ -31,7 +31,7 @@ Brands know you'll notice a price increase before you'll notice a smaller packag
 CartSnitch tracks the unit price — price per ounce, price per use — so you see exactly what's happening.
 
 **Key features:**
-- Unit price tracking across thousands of products
+- Unit price tracking across grocery products
 - Personalized price alerts on products you buy regularly
 - Store comparison — see your total basket cost at different stores
 - Shrinkflation tracker — see which products have changed the most
@@ -55,7 +55,7 @@ You're not imagining it. It's called shrinkflation — and it's costing the aver
 CartSnitch helps you catch it.
 
 **What CartSnitch does:**
-- Tracks unit prices on thousands of grocery products
+- Tracks unit prices on grocery products
 - Alerts you when a product you buy regularly gets smaller or more expensive
 - Compares your total grocery bill across stores so you always know where to shop cheapest
 
@@ -65,7 +65,7 @@ Brands know you'll notice a price increase before you'll notice a smaller packag
 CartSnitch tracks the unit price — price per ounce, price per use — so you see exactly what's happening.
 
 **Key features:**
-- Unit price tracking across thousands of products
+- Unit price tracking across grocery products
 - Personalized price alerts on products you buy regularly
 - Store comparison — see your total basket cost at different stores
 - Shrinkflation tracker — see which products have changed the most
@@ -82,7 +82,7 @@ CartSnitch tracks the unit price — price per ounce, price per use — so you s
 
 ## Feature Highlights (4 bullets, Google Play)
 
-- Track unit prices on thousands of products
+- Track unit prices on grocery products
 - Personalized alerts when products you buy change
 - Compare grocery costs across stores
 - See the biggest shrinkflation offenders

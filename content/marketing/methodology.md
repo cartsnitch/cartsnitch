@@ -17,12 +17,12 @@ Then we calculate the shrinkflation percentage:
 This gives us the effective price increase — accounting for both size changes and price changes.
 
 **Example:**
-- 2021: Cereal at $4.99 for 18 oz → Unit price: $0.277/oz
-- 2024: Same cereal at $4.99 for 15.5 oz → Unit price: $0.322/oz
+- 2021: Cereal at $4.99 for 18 oz → Unit price: $4.99 ÷ 18 oz = $0.277/oz
+- 2024: Same cereal at $4.99 for 15.5 oz → Unit price: $4.99 ÷ 15.5 oz = $0.322/oz
 
-Shrinkflation % = ($0.322 ÷ $0.277) − 1 = 16.2%
+Shrinkflation % = ($4.99 ÷ 15.5) ÷ ($4.99 ÷ 18) − 1 = 16.1%
 
-The shelf price is the same. The unit price went up 16.2%.
+The shelf price is the same. The unit price went up 16.1%.
 
 ---
 
@@ -81,7 +81,7 @@ All three result in a higher unit price. Our percentages capture the total effec
 
 ## Production Data vs Estimates
 
-**Before launch (current):** Our shrinkflation percentages are based on publicly available manufacturer packaging data and USDA baselines. These are directional estimates — they tell you the pattern is real.
+**Before launch (current):** Our shrinkflation percentages are based on publicly available manufacturer packaging data. USDA FoodData Central provides reference data for package sizing baselines. These are directional estimates — they tell you the pattern is real.
 
 **After production deployment:** Once we have a live product with real transaction data, we'll be able to run the numbers against actual purchase data. This will validate and refine our estimates.
 

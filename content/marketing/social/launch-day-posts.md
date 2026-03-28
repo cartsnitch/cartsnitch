@@ -80,9 +80,9 @@ Hey r/Frugal — been working on this for a while and finally ready to share.
 CartSnitch tracks unit prices (price ÷ size) on grocery products and alerts you when products you buy regularly get smaller or more expensive. It also compares your total grocery bill across stores.
 
 **What it does:**
-- Tracks unit prices on thousands of products
+- Tracks unit prices on grocery products
 - Alerts you when a product you buy shrinks or gets more expensive
-- Compares your total basket cost across Kroger, Safeway, and more
+- Compares your total basket cost across Meijer, Kroger, and Target
 - Shows you the biggest shrinkflation offenders we've found
 
 **Why we built it:**
