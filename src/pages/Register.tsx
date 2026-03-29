@@ -28,7 +28,7 @@ export function Register() {
 
     setLoading(true)
     try {
-      const { data, error: authError } = await authClient.signUp.email({
+      const { error: authError } = await authClient.signUp.email({
         name,
         email,
         password,
