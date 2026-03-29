@@ -137,7 +137,7 @@ jobs:
 
       - name: Update dev overlay image tag
         run: |
-          cd infra
+          cd infra/apps/overlays/dev
           kustomize edit set image ghcr.io/cartsnitch/cartsnitch:${{ needs.build-and-push.outputs.calver_tag }}
 
       - name: Commit and push to infra
