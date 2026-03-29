@@ -131,16 +131,19 @@ jobs:
       - name: Install kubectl
         uses: azure/setup-kubectl@v4
 
+      - name: Install kustomize
+        uses: imranismail/setup-kustomize@v2
+
       - name: Update dev overlay image tag
-        working-directory: apps/overlays/dev
         run: |
-          kustomize edit set image ghcr.io/cartsnitch/cartsnitch:${{ needs.build-and-push.outputs.calver_tag }}
+          cd infra
+          kustomize edit set image ghcr.io/cartsnitch/cartsnitch=cartsnitch/cartsnitch:${{ github.sha }}
 
       - name: Commit and push to infra
         run: |
-          cd apps/overlays/dev
+          cd infra
           git config user.name "cartsnitch-ci[bot]"
           git config user.email "cartsnitch-ci[bot]@users.noreply.github.com"
-          git add kustomization.yaml
-          git commit -m "ci(dev): update cartsnitch image to ${{ needs.build-and-push.outputs.calver_tag }}"
+          git add apps/overlays/dev/kustomization.yaml
+          git commit -m "ci(dev): update cartsnitch image to ${{ github.sha }}"
           git push origin main
