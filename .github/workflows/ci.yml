@@ -127,6 +127,7 @@ jobs:
           repository: cartsnitch/infra
           token: ${{ steps.app-token.outputs.token }}
           ref: main
+          path: infra
 
       - name: Install kubectl
         uses: azure/setup-kubectl@v4
