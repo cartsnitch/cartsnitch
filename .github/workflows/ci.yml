@@ -160,3 +160,37 @@ jobs:
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  deploy-dev:
+    runs-on: runners-cartsnitch
+    needs: [build-and-push, build-and-push-auth]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout infra repo
+        uses: actions/checkout@v4
+        with:
+          repository: cartsnitch/infra
+          path: infra
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Install kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Update dev overlay image tag
+        run: |
+          cd infra
+          kustomize edit set image \
+            ghcr.io/cartsnitch/cartsnitch=cartsnitch/cartsnitch:${{ github.sha }} \
+            ghcr.io/cartsnitch/auth=cartsnitch/auth:${{ github.sha }}
+
+      - name: Commit and push
+        run: |
+          cd infra
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add apps/overlays/dev/kustomization.yaml
+          git diff --staged --quiet || git commit -m "chore: update dev image tags to ${{ github.sha }}"
+          git push
