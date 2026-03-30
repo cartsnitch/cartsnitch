@@ -76,6 +76,8 @@ jobs:
           npm install -g playwright
           npx playwright install chromium
       - name: Run Lighthouse CI
+        env:
+          LHCI_CHROME_PATH: /home/runner/.cache/ms-playwright/chromium-1208/chrome-linux/chrome
         run: |
           npm install -g @lhci/cli
           lhci autorun
