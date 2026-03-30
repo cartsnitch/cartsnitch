@@ -3,10 +3,9 @@ FROM python:3.12-slim AS build
 
 WORKDIR /app
 
-# git is required to install cartsnitch-common from GitHub; build-essential and
-# libpq-dev are needed to compile any C-extension wheels (e.g. psycopg2 fallback)
+# build-essential and libpq-dev are needed to compile any C-extension wheels
+# (e.g. psycopg2 fallback).  git is no longer needed here.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
     libpq-dev \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
@@ -14,13 +13,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY pyproject.toml ./
 COPY src/ ./src/
 
-# cartsnitch-common is not on PyPI — install it directly from GitHub, then
-# install the rest of the package dependencies in a single resolver pass so
-# pip can satisfy the cartsnitch-common>=0.1.0 constraint declared in
-# pyproject.toml without hitting PyPI for it.
-RUN pip install --no-cache-dir --prefix=/install \
-    "cartsnitch-common @ git+https://github.com/cartsnitch/common.git@76685ed0384103228cd670b477b967e7752ebe6b" \
-    .
+# cartsnitch-common is not on PyPI — install it from the local monorepo common/
+# directory.  The common/ dir is the cartsnitch-common Python package.
+COPY common/ /tmp/common/
+RUN pip install --no-cache-dir --prefix=/install /tmp/common/ .
 
 # Stage 2: Production image with Playwright + Chromium
 FROM python:3.12-slim AS prod
