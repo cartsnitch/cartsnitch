@@ -57,10 +57,15 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Install Chromium for Lighthouse
+        run: |
+          npm install -g playwright
+          npx playwright install chromium
       - name: Run Lighthouse CI
         run: |
+          CHROME_PATH=$(find /home/runner/.cache/ms-playwright -name chrome -type f 2>/dev/null | head -1)
           npm install -g @lhci/cli
-          lhci autorun
+          LHCI_CHROME_PATH="$CHROME_PATH" lhci autorun
 
   build-and-push:
     runs-on: runners-cartsnitch
