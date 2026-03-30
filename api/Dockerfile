@@ -6,8 +6,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY pyproject.toml ./
-COPY src/ ./src/
+COPY api/pyproject.toml ./
+COPY api/src/ ./src/
+COPY api/alembic.ini ./
+COPY api/alembic/ ./alembic/
 RUN pip install --no-cache-dir --prefix=/install .
 
 FROM python:3.12-slim AS prod
@@ -15,7 +17,9 @@ FROM python:3.12-slim AS prod
 WORKDIR /app
 RUN adduser --system --group --uid 1000 app
 COPY --from=build /install /usr/local
-COPY src/ ./src/
+COPY api/src/ ./src/
+COPY api/alembic.ini ./
+COPY api/alembic/ ./alembic/
 
 USER 1000
 EXPOSE 8000
