@@ -58,7 +58,9 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Install Chromium
-        uses: browser-actions/chromium@v3
+        run: |
+          npm install -g playwright
+          npx playwright install chromium
       - name: Run Lighthouse CI
         run: |
           npm install -g @lhci/cli
