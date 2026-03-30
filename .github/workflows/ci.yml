@@ -75,6 +75,10 @@ jobs:
         run: |
           npm install -g playwright
           npx playwright install --with-deps chromium
+      - name: Start preview server
+        run: |
+          npm run preview &
+          npx wait-on http://localhost:4173/ --timeout 30000
       - name: Run Lighthouse CI
         run: |
           CHROME_PATH=$(find /home/runner/.cache/ms-playwright -name chrome -type f 2>/dev/null | head -1)
@@ -185,7 +189,7 @@ jobs:
           tags: |
             type=sha,prefix=sha-
             type=raw,value=${{ steps.calver.outputs.version }},enable=${{ github.ref == 'refs/heads/main' }}
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads_main' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
       - name: Build and push auth Docker image
         uses: docker/build-push-action@v6
