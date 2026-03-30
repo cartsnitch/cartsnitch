@@ -60,6 +60,22 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test
 
+  lighthouse:
+    runs-on: runners-cartsnitch
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Run Lighthouse CI
+        run: |
+          npm install -g @lhci/cli
+          lhci autorun
+
   build-and-push:
     runs-on: runners-cartsnitch
     needs: [lint, test, e2e]
@@ -164,7 +180,7 @@ jobs:
           tags: |
             type=sha,prefix=sha-
             type=raw,value=${{ steps.calver.outputs.version }},enable=${{ github.ref == 'refs/heads/main' }}
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads_main' }}
 
       - name: Build and push auth Docker image
         uses: docker/build-push-action@v6
