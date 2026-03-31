@@ -6,7 +6,8 @@
       "numberOfRuns": 1,
       "settings": {
         "chromeFlags": ["--headless=new", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage"],
-        "skipAudits": ["bf-cache"]
+        "skipAudits": ["bf-cache"],
+        "disableFullPageScreenshot": true
       }
     },
     "assert": {
