@@ -26,7 +26,7 @@ class UserRead(BaseModel):
 
 class UserStoreAccountCreate(BaseModel):
     user_id: str
-    store_id: str
+    store_id: uuid.UUID
     session_data: dict | None = None
     status: AccountStatus = AccountStatus.ACTIVE
 
@@ -36,7 +36,7 @@ class UserStoreAccountRead(BaseModel):
 
     id: uuid.UUID
     user_id: str
-    store_id: str
+    store_id: uuid.UUID
     status: AccountStatus
     session_expires_at: datetime | None
     last_sync_at: datetime | None
