@@ -5,19 +5,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
+# Build context is the repo root.  These paths are relative to the root.
 WORKDIR /app
-COPY pyproject.toml ./
-COPY src/ ./src/
-RUN pip install --no-cache-dir --prefix=/install .
+COPY api/pyproject.toml ./
+COPY api/src/ ./src/
+COPY common/ ./common/
+RUN pip install --no-cache-dir --prefix=/install ./common/ .
 
 FROM python:3.12-slim AS prod
 
 WORKDIR /app
 RUN adduser --system --group --uid 1000 app
 COPY --from=build /install /usr/local
-COPY src/ ./src/
-COPY alembic.ini ./
-COPY alembic/ ./alembic/
+COPY api/src/ ./src/
+COPY api/alembic.ini ./
+COPY api/alembic/ ./alembic/
 
 USER 1000
 EXPOSE 8000
