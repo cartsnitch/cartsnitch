@@ -225,7 +225,7 @@ jobs:
   deploy-dev:
     runs-on: runners-cartsnitch
     needs: [build-and-push, build-and-push-auth, build-and-push-receiptwitness]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: always() && !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Generate GitHub App token
         id: app-token
@@ -250,11 +250,22 @@ jobs:
       - name: Install kustomize
         uses: imranismail/setup-kustomize@v2
 
-      - name: Update dev overlay image tags
+      - name: Update cartsnitch image tag
+        if: needs.build-and-push.result == 'success'
         run: |
           cd infra/apps/overlays/dev
           kustomize edit set image ghcr.io/cartsnitch/cartsnitch:${{ needs.build-and-push.outputs.calver_tag }}
+
+      - name: Update auth image tag
+        if: needs.build-and-push-auth.result == 'success'
+        run: |
+          cd infra/apps/overlays/dev
           kustomize edit set image ghcr.io/cartsnitch/auth:${{ needs.build-and-push-auth.outputs.calver_tag }}
+
+      - name: Update receiptwitness image tag
+        if: needs.build-and-push-receiptwitness.result == 'success'
+        run: |
+          cd infra/apps/overlays/dev
           kustomize edit set image ghcr.io/cartsnitch/receiptwitness:${{ needs.build-and-push-receiptwitness.outputs.calver_tag }}
 
       - name: Commit and push to infra
