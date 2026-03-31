@@ -3,7 +3,10 @@
     "collect": {
       "staticDistDir": "./dist",
       "url": ["http://localhost:4173/"],
-      "numberOfRuns": 1
+      "numberOfRuns": 1,
+      "settings": {
+        "chromeFlags": ["--headless=new", "--no-sandbox"]
+      }
     },
     "assert": {
       "assertions": {
