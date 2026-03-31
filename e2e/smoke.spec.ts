@@ -1,6 +1,8 @@
-import { test, expect } from "./fixtures";
+import { test, expect } from './fixtures';
 
 test("app loads", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveTitle(/CartSnitch/);
+  // Unauthenticated users are redirected to login
+  await expect(page).toHaveURL(/\/login/);
 });
