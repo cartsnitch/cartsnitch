@@ -40,7 +40,7 @@ class PurchaseItemRead(BaseModel):
 
 
 class PurchaseCreate(BaseModel):
-    user_id: uuid.UUID
+    user_id: str
     store_id: uuid.UUID
     store_location_id: uuid.UUID | None = None
     receipt_id: str
@@ -58,7 +58,7 @@ class PurchaseRead(BaseModel):
     model_config = {"from_attributes": True}
 
     id: uuid.UUID
-    user_id: uuid.UUID
+    user_id: str
     store_id: uuid.UUID
     store_location_id: uuid.UUID | None
     receipt_id: str

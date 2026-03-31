@@ -17,7 +17,7 @@ class UserCreate(BaseModel):
 class UserRead(BaseModel):
     model_config = {"from_attributes": True}
 
-    id: uuid.UUID
+    id: str
     email: str
     display_name: str | None
     created_at: datetime
@@ -25,8 +25,8 @@ class UserRead(BaseModel):
 
 
 class UserStoreAccountCreate(BaseModel):
-    user_id: uuid.UUID
-    store_id: uuid.UUID
+    user_id: str
+    store_id: str
     session_data: dict | None = None
     status: AccountStatus = AccountStatus.ACTIVE
 
@@ -35,8 +35,8 @@ class UserStoreAccountRead(BaseModel):
     model_config = {"from_attributes": True}
 
     id: uuid.UUID
-    user_id: uuid.UUID
-    store_id: uuid.UUID
+    user_id: str
+    store_id: str
     status: AccountStatus
     session_expires_at: datetime | None
     last_sync_at: datetime | None

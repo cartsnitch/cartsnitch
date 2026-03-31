@@ -15,11 +15,12 @@ if TYPE_CHECKING:
     from cartsnitch_common.models.store import Store
 
 
-class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+class User(TimestampMixin, Base):
     """Application user."""
 
     __tablename__ = "users"
 
+    id: Mapped[str] = mapped_column(Text, primary_key=True)
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     display_name: Mapped[str | None] = mapped_column(String(100))
@@ -37,7 +38,7 @@ class UserStoreAccount(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "user_store_accounts"
     __table_args__ = (UniqueConstraint("user_id", "store_id", name="uq_user_store_account"),)
 
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)
     store_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("stores.id"), nullable=False)
     # WARNING: Contains retailer session cookies/tokens. Encryption-at-rest
     # required before production deployment (e.g., pgcrypto or app-level encryption).
