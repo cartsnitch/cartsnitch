@@ -320,6 +320,7 @@ jobs:
         run: |
           cd infra/apps/overlays/dev
           kustomize edit set image ghcr.io/cartsnitch/receiptwitness:${{ needs.build-and-push-receiptwitness.outputs.calver_tag }}
+          kustomize edit set image ghcr.io/cartsnitch/api:${{ needs.build-and-push-api.outputs.calver_tag }}
 
       - name: Update api image tag
         if: needs.build-and-push-api.result == 'success'
