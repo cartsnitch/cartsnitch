@@ -37,7 +37,7 @@ test.describe('J8: Unauthenticated Access', () => {
   test('shows loading spinner while auth session is pending', async ({ page }) => {
     // Intercept but don't respond — session stays pending
     await page.context().clearCookies();
-    const response = await page.request.fetch('/api/auth/session', {
+    await page.request.fetch('/api/auth/session', {
       method: 'GET',
     });
 
