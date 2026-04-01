@@ -5,6 +5,7 @@ Sessions are verified by querying the shared sessions table directly.
 """
 
 from datetime import UTC, datetime
+from hashlib import sha256
 from uuid import UUID
 
 from fastapi import Cookie, Depends, Header, HTTPException, Request, status
@@ -19,18 +20,25 @@ from cartsnitch_api.database import get_db
 # but we support Bearer tokens for service-to-service or mobile clients.
 bearer_scheme = HTTPBearer(auto_error=False)
 
-# Better-Auth session cookie name
-SESSION_COOKIE_NAME = "better-auth.session_token"
+# Better-Auth session cookie names.
+# Over HTTPS Better-Auth adds the __Secure- prefix automatically.
+SESSION_COOKIE_NAMES = [
+    "__Secure-better-auth.session_token",  # HTTPS (deployed)
+    "better-auth.session_token",            # HTTP (local dev)
+]
 
 
 async def _validate_session_token(token: str, db: AsyncSession) -> UUID:
     """Validate a Better-Auth session token against the sessions table.
 
     Returns the user_id (as UUID) if the session is valid and not expired.
+    Better-Auth v1.5.6+ stores tokens as SHA-256 hashes, so we hash the
+    incoming raw token before querying.
     """
+    hashed_token = sha256(token.encode("utf-8")).hexdigest()
     result = await db.execute(
         text("SELECT user_id, expires_at FROM sessions WHERE token = :token"),
-        {"token": token},
+        {"token": hashed_token},
     )
     row = result.first()
 
@@ -67,8 +75,12 @@ async def get_current_user(
     """
     token: str | None = None
 
-    # 1. Check session cookie
-    cookie_token = request.cookies.get(SESSION_COOKIE_NAME)
+    # 1. Check session cookie (try both names for HTTP/HTTPS compatibility)
+    cookie_token = None
+    for name in SESSION_COOKIE_NAMES:
+        cookie_token = request.cookies.get(name)
+        if cookie_token:
+            break
     if cookie_token:
         token = cookie_token
 
