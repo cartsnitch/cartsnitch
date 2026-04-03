@@ -1,5 +1,6 @@
 """User and UserStoreAccount models."""
 
+import secrets
 import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -21,6 +22,9 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "users"
 
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    email_inbound_token: Mapped[str] = mapped_column(
+        String(22), nullable=False, unique=True, default=lambda: secrets.token_urlsafe(16)
+    )
     hashed_password: Mapped[str | None] = mapped_column(String(255), nullable=True)
     display_name: Mapped[str | None] = mapped_column(String(100))
     email_verified: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
