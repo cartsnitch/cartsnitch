@@ -17,7 +17,11 @@ TOKEN_PATTERN = re.compile(r"receipts\+([A-Za-z0-9_-]+)@")
 
 def verify_mailgun_signature(token: str, timestamp: str, signature: str) -> bool:
     """Verify Mailgun webhook signature."""
-    if abs(time.time() - int(timestamp)) > 300:  # 5 min freshness
+    try:
+        ts = int(timestamp)
+    except (ValueError, TypeError):
+        return False
+    if abs(time.time() - ts) > 300:  # 5 min freshness
         return False
     key = settings.mailgun_webhook_signing_key.encode()
     hmac_digest = hmac.new(key, f"{timestamp}{token}".encode(), hashlib.sha256).hexdigest()
