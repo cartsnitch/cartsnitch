@@ -147,6 +147,40 @@ class TestStoreLocationModel:
         assert loc.lat == pytest.approx(42.2808)
 
 
+class TestUserModel:
+    def test_email_inbound_token_auto_populated(self, session):
+        user = User(
+            id=uuid.uuid4(),
+            email="token_test@example.com",
+            hashed_password="hashed",
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        )
+        session.add(user)
+        session.commit()
+        assert user.email_inbound_token is not None
+        assert len(user.email_inbound_token) == 22
+
+    def test_email_inbound_token_unique(self, session):
+        user1 = User(
+            id=uuid.uuid4(),
+            email="user1@example.com",
+            hashed_password="hashed",
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        )
+        user2 = User(
+            id=uuid.uuid4(),
+            email="user2@example.com",
+            hashed_password="hashed",
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        )
+        session.add_all([user1, user2])
+        session.commit()
+        assert user1.email_inbound_token != user2.email_inbound_token
+
+
 class TestUserStoreAccountModel:
     def test_account_status_enum(self, session):
         user = User(

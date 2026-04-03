@@ -20,6 +20,7 @@ class UserRead(BaseModel):
     id: uuid.UUID
     email: str
     display_name: str | None
+    email_inbound_token: str
     created_at: datetime
     updated_at: datetime
 
