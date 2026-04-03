@@ -6,13 +6,11 @@ from httpx import ASGITransport, AsyncClient
 from cartsnitch_api.main import app
 
 EXPECTED_ROUTES = [
-    # Auth (6)
-    ("post", "/auth/register"),
-    ("post", "/auth/login"),
-    ("post", "/auth/refresh"),
+    # Auth (4 — register/login/refresh handled by Better-Auth service)
     ("get", "/auth/me"),
     ("patch", "/auth/me"),
     ("delete", "/auth/me"),
+    ("get", "/auth/me/email-in-address"),
     # Stores (4)
     ("get", "/stores"),
     ("get", "/me/stores"),
@@ -89,4 +87,4 @@ async def test_route_count():
                 if method in ("get", "post", "put", "delete", "patch"):
                     count += 1
 
-        assert count == 34, f"Expected 34 routes, found {count}"
+        assert count == 31, f"Expected 31 routes, found {count}"

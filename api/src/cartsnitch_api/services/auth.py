@@ -1,71 +1,28 @@
-"""Auth service — user registration, login, token management."""
+"""Auth service — user profile management.
+
+Registration, login, token management, and session handling are now
+handled by the Better-Auth service (auth/). This service provides
+user lookup and profile update operations for the API gateway.
+"""
 
 from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from cartsnitch_api.auth.jwt import create_access_token, create_refresh_token, decode_token
-from cartsnitch_api.auth.passwords import hash_password, verify_password
-from cartsnitch_api.config import settings
-
 
 class AuthService:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    async def register(self, email: str, password: str, display_name: str) -> dict:
-        from cartsnitch_api.models import User
-
-        existing = await self.db.execute(select(User).where(User.email == email))
-        if existing.scalar_one_or_none():
-            raise ValueError("Email already registered")
-
-        user = User(
-            email=email,
-            hashed_password=hash_password(password),
-            display_name=display_name,
-        )
-        self.db.add(user)
-        await self.db.commit()
-        await self.db.refresh(user)
-
-        return self._make_token_response(user.id)
-
-    async def login(self, email: str, password: str) -> dict:
-        from cartsnitch_api.models import User
-
-        result = await self.db.execute(select(User).where(User.email == email))
-        user = result.scalar_one_or_none()
-        if not user or not verify_password(password, user.hashed_password):
-            raise ValueError("Invalid email or password")
-
-        return self._make_token_response(user.id)
-
-    async def refresh(self, refresh_token: str) -> dict:
-        from cartsnitch_api.models import User
-
-        try:
-            payload = decode_token(refresh_token)
-        except ValueError:
-            raise ValueError("Invalid refresh token") from None
-
-        if payload.get("type") != "refresh":
-            raise ValueError("Invalid token type") from None
-
-        user_id = UUID(payload["sub"])
-
-        # Verify the user still exists before issuing new tokens
-        result = await self.db.execute(select(User).where(User.id == user_id))
-        if not result.scalar_one_or_none():
-            raise ValueError("User no longer exists")
-
-        return self._make_token_response(user_id)
-
     async def get_user(self, user_id: UUID) -> dict:
         from cartsnitch_api.models import User
 
-        result = await self.db.execute(select(User).where(User.id == user_id))
+        # Use str() to ensure consistent string comparison for UUID columns
+        # (works with both SQLite VARCHAR and Postgres UUID storage)
+        result = await self.db.execute(
+            select(User).where(User.id == str(user_id))
+        )
         user = result.scalar_one_or_none()
         if not user:
             raise LookupError("User not found")
@@ -80,7 +37,8 @@ class AuthService:
     async def update_user(self, user_id: UUID, **fields) -> dict:
         from cartsnitch_api.models import User
 
-        result = await self.db.execute(select(User).where(User.id == user_id))
+        user_id_str = str(user_id)
+        result = await self.db.execute(select(User).where(User.id == user_id_str))
         user = result.scalar_one_or_none()
         if not user:
             raise LookupError("User not found")
@@ -89,7 +47,7 @@ class AuthService:
             user.display_name = fields["display_name"]
         if "email" in fields and fields["email"] is not None:
             existing = await self.db.execute(
-                select(User).where(User.email == fields["email"], User.id != user_id)
+                select(User).where(User.email == fields["email"], User.id != user_id_str)
             )
             if existing.scalar_one_or_none():
                 raise ValueError("Email already in use")
@@ -108,7 +66,7 @@ class AuthService:
     async def delete_user(self, user_id: UUID) -> None:
         from cartsnitch_api.models import User
 
-        result = await self.db.execute(select(User).where(User.id == user_id))
+        result = await self.db.execute(select(User).where(User.id == str(user_id)))
         user = result.scalar_one_or_none()
         if not user:
             raise LookupError("User not found")
@@ -116,10 +74,20 @@ class AuthService:
         await self.db.delete(user)
         await self.db.commit()
 
-    def _make_token_response(self, user_id: UUID) -> dict:
+    async def get_email_in_address(self, user_id: UUID) -> dict:
+        from cartsnitch_api.models import User
+
+        result = await self.db.execute(
+            select(User.email_inbound_token).where(User.id == str(user_id))
+        )
+        token = result.scalar_one_or_none()
+        if not token:
+            raise LookupError("Email inbound token not found")
+
         return {
-            "access_token": create_access_token(user_id),
-            "refresh_token": create_refresh_token(user_id),
-            "token_type": "bearer",
-            "expires_in": settings.jwt_access_token_expire_minutes * 60,
+            "email_address": f"receipts+{token}@receipts.cartsnitch.com",
+            "instructions": (
+                "Forward your digital receipt emails to this address. "
+                "We currently support Meijer, Kroger, and Target receipt emails."
+            ),
         }
