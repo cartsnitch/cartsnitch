@@ -99,3 +99,27 @@ def test_stale_timestamp(client, mock_redis):
     assert response.status_code == 406
     assert response.json()["detail"] == "Invalid signature"
     mock_redis["enqueue"].assert_not_awaited()
+
+
+def test_invalid_timestamp_returns_406(client, mock_redis):
+    """Empty timestamp should return 406, not 500."""
+    with patch("receiptwitness.api.routes.settings") as mock_settings:
+        mock_settings.mailgun_webhook_signing_key = "test-secret"
+        form = {
+            "token": "test-token",
+            "timestamp": "",
+            "signature": "any-sig",
+            "sender": "sender@example.com",
+            "recipient": "receipts+user123@example.com",
+            "subject": "Receipt",
+        }
+        response = client.post("/inbound/email", data=form)
+    assert response.status_code == 406
+    assert response.json()["detail"] == "Invalid signature"
+    mock_redis["enqueue"].assert_not_awaited()
+
+
+def test_get_inbound_email_returns_405(client):
+    """GET /inbound/email is not allowed."""
+    response = client.get("/inbound/email")
+    assert response.status_code == 405
