@@ -5,8 +5,6 @@ Sessions are verified by querying the shared sessions table directly.
 """
 
 from datetime import UTC, datetime
-from uuid import UUID
-
 from fastapi import Cookie, Depends, Header, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import text
@@ -23,10 +21,10 @@ bearer_scheme = HTTPBearer(auto_error=False)
 SESSION_COOKIE_NAME = "better-auth.session_token"
 
 
-async def _validate_session_token(token: str, db: AsyncSession) -> UUID:
+async def _validate_session_token(token: str, db: AsyncSession) -> str:
     """Validate a Better-Auth session token against the sessions table.
 
-    Returns the user_id (as UUID) if the session is valid and not expired.
+    Returns the user_id (as str) if the session is valid and not expired.
     """
     result = await db.execute(
         text("SELECT user_id, expires_at FROM sessions WHERE token = :token"),
@@ -41,9 +39,6 @@ async def _validate_session_token(token: str, db: AsyncSession) -> UUID:
         )
 
     user_id, expires_at = row
-    # SQLite stores datetimes as ISO strings; parse if necessary
-    if isinstance(expires_at, str):
-        expires_at = datetime.fromisoformat(expires_at)
     if expires_at.tzinfo is None:
         # Treat naive datetimes as UTC
         expires_at = expires_at.replace(tzinfo=UTC)
@@ -54,14 +49,14 @@ async def _validate_session_token(token: str, db: AsyncSession) -> UUID:
             detail="Session expired",
         )
 
-    return UUID(str(user_id))
+    return str(user_id)
 
 
 async def get_current_user(
     request: Request,
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
     db: AsyncSession = Depends(get_db),
-) -> UUID:
+) -> str:
     """Extract and validate the session token from cookie or Authorization header.
 
     Checks in order:

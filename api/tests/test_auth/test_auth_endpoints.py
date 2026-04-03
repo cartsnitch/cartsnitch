@@ -88,15 +88,15 @@ async def test_expired_session_rejected(client, db_engine):
     async with db_engine.begin() as conn:
         await conn.execute(
             text(
-                "INSERT INTO users (id, email, hashed_password, display_name, email_inbound_token, created_at, updated_at) "
-                "VALUES (:id, :email, :hp, :dn, :eit, :ca, :ua)"
+                "INSERT INTO users (id, email, hashed_password, display_name, email_verified, created_at, updated_at) "
+                "VALUES (:id, :email, :hp, :dn, :ev, :ca, :ua)"
             ),
             {
                 "id": user_id,
                 "email": "expired@example.com",
                 "hp": "unused",
                 "dn": "Expired User",
-                "eit": secrets.token_urlsafe(16),
+                "ev": False,
                 "ca": now,
                 "ua": now,
             },

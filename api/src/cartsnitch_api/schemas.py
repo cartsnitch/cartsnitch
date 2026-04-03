@@ -1,7 +1,6 @@
 """Pydantic v2 request/response schemas for all API endpoints."""
 
 from datetime import datetime
-from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -16,7 +15,7 @@ class UpdateUserRequest(BaseModel):
 
 
 class UserResponse(BaseModel):
-    id: UUID
+    id: str
     email: str
     display_name: str
     created_at: datetime
@@ -263,13 +262,6 @@ class PaginatedResponse(BaseModel):
 class ErrorResponse(BaseModel):
     detail: str
     code: str | None = None
-
-
-# ---------- Email-In ----------
-
-class EmailInAddressResponse(BaseModel):
-    email_address: str
-    instructions: str
 
 
 # Rebuild forward refs

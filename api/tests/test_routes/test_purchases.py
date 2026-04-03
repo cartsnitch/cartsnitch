@@ -2,81 +2,44 @@
 
 import secrets
 import uuid
-from datetime import UTC, datetime, date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from cartsnitch_api.models import Purchase, PurchaseItem, Store
+from cartsnitch_api.models import Purchase, PurchaseItem, Store, User
 
 
 @pytest.fixture
 async def purchase_data(db_engine):
-    """Seed a user, store, purchase, and items using session-cookie auth."""
+    """Seed a user, store, purchase, items, and a valid session."""
     factory = async_sessionmaker(db_engine, class_=AsyncSession, expire_on_commit=False)
     async with factory() as session:
-        user_id = str(uuid.uuid4())
-        session_token = secrets.token_urlsafe(32)
-        now = datetime.now(UTC).isoformat()
-        expires = (datetime.now(UTC) + timedelta(days=7)).isoformat()
-
-        # Create the user
-        await session.execute(
-            text(
-                "INSERT INTO users (id, email, hashed_password, display_name, email_inbound_token, created_at, updated_at) "
-                "VALUES (:id, :email, :hashed_password, :display_name, :email_inbound_token, :created_at, :updated_at)"
-            ),
-            {
-                "id": user_id,
-                "email": "buyer@example.com",
-                "hashed_password": "not-used-with-better-auth",
-                "display_name": "Buyer",
-                "email_inbound_token": secrets.token_urlsafe(16),
-                "created_at": now,
-                "updated_at": now,
-            },
+        user = User(
+            email="buyer@example.com",
+            hashed_password="not-used-with-better-auth",
+            display_name="Buyer",
         )
-
-        # Create the session
-        await session.execute(
-            text(
-                "INSERT INTO sessions (id, token, user_id, expires_at, created_at, updated_at) "
-                "VALUES (:id, :token, :user_id, :expires_at, :created_at, :updated_at)"
-            ),
-            {
-                "id": str(uuid.uuid4()),
-                "token": session_token,
-                "user_id": user_id,
-                "expires_at": expires,
-                "created_at": now,
-                "updated_at": now,
-            },
-        )
-
-        # Create the store
-        store = Store(name="Kroger", slug="kroger", id=uuid.uuid4())
-        session.add(store)
-        await session.flush()
+        store = Store(name="Kroger", slug="kroger")
+        session.add_all([user, store])
+        await session.commit()
+        await session.refresh(user)
         await session.refresh(store)
 
-        # Create the purchase
         purchase = Purchase(
-            id=uuid.uuid4(),
-            user_id=uuid.UUID(user_id),
+            user_id=user.id,
             store_id=store.id,
             receipt_id="receipt-001",
             purchase_date=date(2026, 3, 10),
             total=Decimal("42.50"),
         )
         session.add(purchase)
-        await session.flush()
+        await session.commit()
         await session.refresh(purchase)
 
-        # Create the purchase item
         item = PurchaseItem(
-            id=uuid.uuid4(),
             purchase_id=purchase.id,
             product_name_raw="Organic Milk 1gal",
             quantity=Decimal("1"),
@@ -86,12 +49,33 @@ async def purchase_data(db_engine):
         session.add(item)
         await session.commit()
 
-        return {
-            "user_id": user_id,
-            "store": store,
-            "purchase": purchase,
-            "headers": {"Cookie": f"better-auth.session_token={session_token}"},
-        }
+    # Create a session token directly in the sessions table
+    session_token = secrets.token_urlsafe(32)
+    now = datetime.now(UTC).isoformat()
+    expires = (datetime.now(UTC) + timedelta(days=7)).isoformat()
+
+    async with db_engine.begin() as conn:
+        await conn.execute(
+            text(
+                "INSERT INTO sessions (id, token, user_id, expires_at, created_at, updated_at) "
+                "VALUES (:id, :token, :user_id, :expires_at, :created_at, :updated_at)"
+            ),
+            {
+                "id": str(uuid.uuid4()),
+                "token": session_token,
+                "user_id": str(user.id),
+                "expires_at": expires,
+                "created_at": now,
+                "updated_at": now,
+            },
+        )
+
+    return {
+        "user": user,
+        "store": store,
+        "purchase": purchase,
+        "headers": {"Cookie": f"better-auth.session_token={session_token}"},
+    }
 
 
 @pytest.mark.asyncio

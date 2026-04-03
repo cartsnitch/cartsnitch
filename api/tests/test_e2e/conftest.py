@@ -7,11 +7,10 @@ exercise cross-resource queries against real data.
 
 from datetime import date, timedelta
 from decimal import Decimal
-import uuid
-
-from sqlalchemy import text
+from uuid import UUID
 
 import pytest
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from cartsnitch_api.models import (
@@ -27,27 +26,24 @@ from cartsnitch_api.models import (
 # Shared test constants
 ZERO_UUID = "00000000-0000-0000-0000-000000000000"
 BAD_UUID = "not-a-uuid"
-# Anchor date relative to today so coupon validity windows stay in the future
-ANCHOR_DATE = date.today()
+# Fixed anchor date for deterministic tests
+ANCHOR_DATE = date(2026, 3, 15)
 
 
 @pytest.fixture
 async def seed_data(db_engine, auth_headers):
     """Seed a full dataset and return identifiers for test assertions."""
-    import uuid
-
     factory = async_sessionmaker(db_engine, class_=AsyncSession, expire_on_commit=False)
     async with factory() as session:
         # -- Stores --
-        meijer = Store(name="Meijer", slug="meijer", id=uuid.uuid4())
-        kroger = Store(name="Kroger", slug="kroger", id=uuid.uuid4())
-        target = Store(name="Target", slug="target", id=uuid.uuid4())
+        meijer = Store(name="Meijer", slug="meijer")
+        kroger = Store(name="Kroger", slug="kroger")
+        target = Store(name="Target", slug="target")
         session.add_all([meijer, kroger, target])
         await session.flush()
 
         # -- Products --
         cheerios = NormalizedProduct(
-            id=uuid.uuid4(),
             canonical_name="Cheerios 18oz",
             category="pantry",
             brand="General Mills",
@@ -56,7 +52,6 @@ async def seed_data(db_engine, auth_headers):
             upc_variants=["016000275263"],
         )
         milk = NormalizedProduct(
-            id=uuid.uuid4(),
             canonical_name="Whole Milk 1gal",
             category="dairy",
             brand="Meijer",
@@ -64,7 +59,6 @@ async def seed_data(db_engine, auth_headers):
             size_unit="gal",
         )
         chicken = NormalizedProduct(
-            id=uuid.uuid4(),
             canonical_name="Chicken Breast 1lb",
             category="meat",
             brand=None,
@@ -81,7 +75,6 @@ async def seed_data(db_engine, auth_headers):
         for i, price_val in enumerate([Decimal("3.99"), Decimal("4.29"), Decimal("4.79")]):
             prices.append(
                 PriceHistory(
-                    id=uuid.uuid4(),
                     normalized_product_id=cheerios.id,
                     store_id=meijer.id,
                     observed_date=today - timedelta(days=60 - i * 30),
@@ -93,7 +86,6 @@ async def seed_data(db_engine, auth_headers):
         for i in range(3):
             prices.append(
                 PriceHistory(
-                    id=uuid.uuid4(),
                     normalized_product_id=cheerios.id,
                     store_id=kroger.id,
                     observed_date=today - timedelta(days=60 - i * 30),
@@ -104,7 +96,6 @@ async def seed_data(db_engine, auth_headers):
         # Milk at Meijer
         prices.append(
             PriceHistory(
-                id=uuid.uuid4(),
                 normalized_product_id=milk.id,
                 store_id=meijer.id,
                 observed_date=today - timedelta(days=7),
@@ -115,7 +106,6 @@ async def seed_data(db_engine, auth_headers):
         # Milk at Kroger
         prices.append(
             PriceHistory(
-                id=uuid.uuid4(),
                 normalized_product_id=milk.id,
                 store_id=kroger.id,
                 observed_date=today - timedelta(days=5),
@@ -126,7 +116,6 @@ async def seed_data(db_engine, auth_headers):
         # Chicken at Target
         prices.append(
             PriceHistory(
-                id=uuid.uuid4(),
                 normalized_product_id=chicken.id,
                 store_id=target.id,
                 observed_date=today - timedelta(days=3),
@@ -137,29 +126,19 @@ async def seed_data(db_engine, auth_headers):
         session.add_all(prices)
         await session.flush()
 
-        # -- Purchases (need the user_id from the registered test user) --
-        # Extract session_token from auth_headers, then look up the real user_id
-        import http.cookies
-        cookie_header = auth_headers.get("Cookie", "")
-        cookies = http.cookies.SimpleCookie()
-        cookies.load(cookie_header)
-        session_token = cookies.get("better-auth.session_token").value if "better-auth.session_token" in cookie_header else None
-        if session_token is None:
-            raise RuntimeError("seed_data fixture requires cookie-based auth session token")
+        # -- Get the user_id from the session token in auth_headers --
+        cookie_str = auth_headers.get("Cookie", "")
+        session_token = cookie_str.split("=", 1)[1] if "=" in cookie_str else ""
 
-        # Look up the real user_id from the sessions table
-        row = await session.execute(
+        result = await session.execute(
             text("SELECT user_id FROM sessions WHERE token = :token"),
-            {"token": session_token}
+            {"token": session_token},
         )
-        session_row = row.fetchone()
-        if session_row is None:
-            raise RuntimeError("Session not found for session token in auth_headers")
-        real_user_id = session_row[0]
+        row = result.first()
+        user_id = UUID(row[0])
 
         purchase1 = Purchase(
-            id=uuid.uuid4(),
-            user_id=uuid.UUID(real_user_id),
+            user_id=user_id,
             store_id=meijer.id,
             receipt_id="meijer-2026-001",
             purchase_date=today - timedelta(days=10),
@@ -168,8 +147,7 @@ async def seed_data(db_engine, auth_headers):
             tax=Decimal("1.95"),
         )
         purchase2 = Purchase(
-            id=uuid.uuid4(),
-            user_id=uuid.UUID(real_user_id),
+            user_id=user_id,
             store_id=kroger.id,
             receipt_id="kroger-2026-001",
             purchase_date=today - timedelta(days=5),
@@ -182,7 +160,6 @@ async def seed_data(db_engine, auth_headers):
 
         # -- Purchase Items --
         item1 = PurchaseItem(
-            id=uuid.uuid4(),
             purchase_id=purchase1.id,
             product_name_raw="Cheerios 18oz Box",
             quantity=Decimal("1"),
@@ -191,7 +168,6 @@ async def seed_data(db_engine, auth_headers):
             normalized_product_id=cheerios.id,
         )
         item2 = PurchaseItem(
-            id=uuid.uuid4(),
             purchase_id=purchase1.id,
             product_name_raw="Meijer Whole Milk 1gal",
             quantity=Decimal("2"),
@@ -200,7 +176,6 @@ async def seed_data(db_engine, auth_headers):
             normalized_product_id=milk.id,
         )
         item3 = PurchaseItem(
-            id=uuid.uuid4(),
             purchase_id=purchase2.id,
             product_name_raw="KRO CHEERIOS 18OZ",
             quantity=Decimal("1"),
@@ -213,7 +188,6 @@ async def seed_data(db_engine, auth_headers):
 
         # -- Coupons --
         coupon1 = Coupon(
-            id=uuid.uuid4(),
             store_id=meijer.id,
             normalized_product_id=cheerios.id,
             title="$1 off Cheerios",
@@ -224,7 +198,6 @@ async def seed_data(db_engine, auth_headers):
             valid_to=today + timedelta(days=30),
         )
         coupon2 = Coupon(
-            id=uuid.uuid4(),
             store_id=kroger.id,
             normalized_product_id=None,
             title="10% off dairy",
@@ -239,7 +212,6 @@ async def seed_data(db_engine, auth_headers):
 
         # -- Shrinkflation events --
         shrink = ShrinkflationEvent(
-            id=uuid.uuid4(),
             normalized_product_id=cheerios.id,
             detected_date=today - timedelta(days=15),
             old_size="20",
@@ -274,7 +246,7 @@ async def seed_data(db_engine, auth_headers):
 
         return {
             "headers": auth_headers,
-            "user_id": real_user_id,
+            "user_id": user_id,
             "stores": {"meijer": meijer, "kroger": kroger, "target": target},
             "products": {"cheerios": cheerios, "milk": milk, "chicken": chicken},
             "purchases": {"meijer_trip": purchase1, "kroger_trip": purchase2},

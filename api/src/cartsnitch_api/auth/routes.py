@@ -5,15 +5,15 @@ the Better-Auth service (auth/). This router provides user profile
 endpoints that query our own user data from the shared database.
 """
 
-from uuid import UUID
-
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from cartsnitch_api.auth.dependencies import get_current_user
 from cartsnitch_api.database import get_db
+from cartsnitch_api.models import User
 from cartsnitch_api.schemas import (
-    EmailInAddressResponse,
     UpdateUserRequest,
     UserResponse,
 )
@@ -22,9 +22,14 @@ from cartsnitch_api.services.auth import AuthService
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
+class EmailInAddressResponse(BaseModel):
+    email_address: str
+    instructions: str
+
+
 @router.get("/me", response_model=UserResponse)
 async def get_me(
-    user_id: UUID = Depends(get_current_user),
+    user_id: str = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     svc = AuthService(db)
@@ -39,7 +44,7 @@ async def get_me(
 @router.patch("/me", response_model=UserResponse)
 async def update_me(
     body: UpdateUserRequest,
-    user_id: UUID = Depends(get_current_user),
+    user_id: str = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     svc = AuthService(db)
@@ -55,7 +60,7 @@ async def update_me(
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_me(
-    user_id: UUID = Depends(get_current_user),
+    user_id: str = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     svc = AuthService(db)
@@ -69,13 +74,19 @@ async def delete_me(
 
 @router.get("/me/email-in-address", response_model=EmailInAddressResponse)
 async def get_email_in_address(
-    user_id: UUID = Depends(get_current_user),
+    user_id: str = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    svc = AuthService(db)
-    try:
-        return await svc.get_email_in_address(user_id)
-    except LookupError:
+    result = await db.execute(select(User.email_inbound_token).where(User.id == user_id))
+    token = result.scalar_one_or_none()
+    if not token:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Email inbound token not found"
         ) from None
+    return EmailInAddressResponse(
+        email_address=f"receipts+{token}@receipts.cartsnitch.com",
+        instructions=(
+            "Forward your digital receipt emails to this address. "
+            "We currently support Meijer, Kroger, and Target receipt emails."
+        ),
+    )

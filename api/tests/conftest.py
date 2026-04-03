@@ -141,7 +141,6 @@ async def _create_test_user_and_session(client: AsyncClient, db_engine, **user_o
     user_id = str(uuid.uuid4())
     email = user_overrides.get("email", "test@example.com")
     display_name = user_overrides.get("display_name", "Test User")
-    email_inbound_token = user_overrides.get("email_inbound_token", secrets.token_urlsafe(16))
     session_token = secrets.token_urlsafe(32)
     session_id = str(uuid.uuid4())
     now = datetime.now(UTC).isoformat()
@@ -150,15 +149,15 @@ async def _create_test_user_and_session(client: AsyncClient, db_engine, **user_o
     async with db_engine.begin() as conn:
         await conn.execute(
             text(
-                "INSERT INTO users (id, email, hashed_password, display_name, email_inbound_token, created_at, updated_at) "
-                "VALUES (:id, :email, :hashed_password, :display_name, :email_inbound_token, :created_at, :updated_at)"
+                "INSERT INTO users (id, email, hashed_password, display_name, email_verified, created_at, updated_at) "
+                "VALUES (:id, :email, :hashed_password, :display_name, :email_verified, :created_at, :updated_at)"
             ),
             {
                 "id": user_id,
                 "email": email,
                 "hashed_password": "not-used-with-better-auth",
                 "display_name": display_name,
-                "email_inbound_token": email_inbound_token,
+                "email_verified": False,
                 "created_at": now,
                 "updated_at": now,
             },

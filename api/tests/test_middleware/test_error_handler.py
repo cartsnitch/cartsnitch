@@ -15,12 +15,11 @@ async def test_404_returns_structured_error(client):
 
 
 @pytest.mark.asyncio
-async def test_validation_error_returns_422_with_field_errors(client, auth_headers):
+async def test_validation_error_returns_422_with_field_errors(client):
     """Invalid request body should return structured validation errors."""
-    resp = await client.patch(
-        "/auth/me",
-        headers=auth_headers,
-        json={"display_name": ""},
+    resp = await client.post(
+        "/auth/register",
+        json={"email": "not-an-email", "password": "short", "display_name": ""},
     )
     assert resp.status_code == 422
     body = resp.json()
