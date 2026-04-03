@@ -1,6 +1,6 @@
 """User and UserStoreAccount models."""
 
-import uuid
+import secrets
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -25,6 +25,12 @@ class User(TimestampMixin, Base):
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     display_name: Mapped[str | None] = mapped_column(String(100))
+    email_inbound_token: Mapped[str] = mapped_column(
+        String(22),
+        nullable=False,
+        unique=True,
+        default=lambda: secrets.token_urlsafe(16),
+    )
 
     # Relationships
     store_accounts: Mapped[list["UserStoreAccount"]] = relationship(back_populates="user")
@@ -38,7 +44,7 @@ class UserStoreAccount(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __table_args__ = (UniqueConstraint("user_id", "store_id", name="uq_user_store_account"),)
 
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)
-    store_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("stores.id"), nullable=False)
+    store_id: Mapped[str] = mapped_column(ForeignKey("stores.id"), nullable=False)
     session_data: Mapped[dict | None] = mapped_column(EncryptedJSON)
     session_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     last_sync_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

@@ -5,7 +5,6 @@ Sessions are verified by querying the shared sessions table directly.
 """
 
 from datetime import UTC, datetime
-
 from fastapi import Cookie, Depends, Header, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import text
@@ -18,27 +17,18 @@ from cartsnitch_api.database import get_db
 # but we support Bearer tokens for service-to-service or mobile clients.
 bearer_scheme = HTTPBearer(auto_error=False)
 
-# Better-Auth session cookie names.
-# Over HTTPS Better-Auth adds the __Secure- prefix automatically.
-SESSION_COOKIE_NAMES = [
-    "__Secure-better-auth.session_token",  # HTTPS (deployed)
-    "better-auth.session_token",            # HTTP (local dev)
-]
+# Better-Auth session cookie name
+SESSION_COOKIE_NAME = "better-auth.session_token"
 
 
 async def _validate_session_token(token: str, db: AsyncSession) -> str:
     """Validate a Better-Auth session token against the sessions table.
 
     Returns the user_id (as str) if the session is valid and not expired.
-    Better-Auth v1.5.6 stores raw tokens in the DB. The session cookie
-    is signed: ``rawToken.base64HMACSignature``. Strip the signature
-    before querying.
     """
-    # Signed cookie format: rawToken.hmacSignature — split and use only the token part
-    raw_token = token.split(".")[0] if "." in token else token
     result = await db.execute(
         text("SELECT user_id, expires_at FROM sessions WHERE token = :token"),
-        {"token": raw_token},
+        {"token": token},
     )
     row = result.first()
 
@@ -75,12 +65,8 @@ async def get_current_user(
     """
     token: str | None = None
 
-    # 1. Check session cookie (try both names for HTTP/HTTPS compatibility)
-    cookie_token = None
-    for name in SESSION_COOKIE_NAMES:
-        cookie_token = request.cookies.get(name)
-        if cookie_token:
-            break
+    # 1. Check session cookie
+    cookie_token = request.cookies.get(SESSION_COOKIE_NAME)
     if cookie_token:
         token = cookie_token
 
