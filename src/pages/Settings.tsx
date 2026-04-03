@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authClient } from '../lib/auth-client.ts'
 import { useAuthStore } from '../stores/auth.ts'
@@ -9,6 +10,26 @@ export function Settings() {
   const setAuthenticated = useAuthStore((s) => s.setAuthenticated)
   const navigate = useNavigate()
   const { theme, setTheme } = useThemeStore()
+  const [emailInAddress, setEmailInAddress] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    if (!session?.user) return
+    fetch('/auth/me/email-in-address', {
+      credentials: 'include',
+    })
+      .then((res) => res.json())
+      .then((data) => setEmailInAddress(data.email_address))
+      .catch(() => setEmailInAddress(null))
+  }, [session])
+
+  async function handleCopyEmail() {
+    if (emailInAddress) {
+      await navigator.clipboard.writeText(emailInAddress)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
 
   const user = session?.user
   const connectedStores: string[] = []
@@ -111,6 +132,30 @@ export function Settings() {
           >
             Sign Out
           </button>
+        </div>
+      </section>
+
+      {/* Receipt Email section */}
+      <section className="mt-6">
+        <h2 className="mb-3 text-sm font-semibold text-gray-500">Receipt Email</h2>
+        <div className="rounded-xl bg-white p-4 shadow-sm">
+          <p className="mb-2 text-sm text-gray-600">
+            Forward your digital receipt emails to this address:
+          </p>
+          <div className="flex items-center gap-2">
+            <code className="flex-1 rounded-lg bg-gray-100 px-3 py-2 text-sm font-mono text-gray-800 truncate">
+              {emailInAddress ?? 'Loading...'}
+            </code>
+            <button
+              onClick={handleCopyEmail}
+              className="rounded-lg bg-brand-blue px-3 py-2 text-sm font-medium text-white hover:bg-brand-blue/90 transition-colors"
+            >
+              {copied ? 'Copied!' : 'Copy'}
+            </button>
+          </div>
+          <p className="mt-2 text-xs text-gray-400">
+            Supports Meijer, Kroger, and Target receipt emails.
+          </p>
         </div>
       </section>
     </div>
