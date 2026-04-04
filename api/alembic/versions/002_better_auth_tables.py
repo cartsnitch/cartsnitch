@@ -25,16 +25,14 @@ def upgrade() -> None:
     inspector = sa.inspect(conn)
 
     # --- Extend users table for Better-Auth compatibility ---
-    existing_user_cols = (
-        [c["name"] for c in inspector.get_columns("users")]
-        if inspector.has_table("users")
-        else []
-    )
-
-    if "email_verified" not in existing_user_cols:
-        op.add_column("users", sa.Column("email_verified", sa.Boolean(), nullable=False, server_default="false"))
-    if "image" not in existing_user_cols:
-        op.add_column("users", sa.Column("image", sa.Text(), nullable=True))
+    # Guard: on a fresh DB Base.metadata.create_all (called in env.py after migrations)
+    # creates the users table with all columns, so migration 002 must not re-run add_column.
+    if inspector.has_table("users"):
+        existing_user_cols = [c["name"] for c in inspector.get_columns("users")]
+        if "email_verified" not in existing_user_cols:
+            op.add_column("users", sa.Column("email_verified", sa.Boolean(), nullable=False, server_default="false"))
+        if "image" not in existing_user_cols:
+            op.add_column("users", sa.Column("image", sa.Text(), nullable=True))
 
     # --- Create sessions table ---
     if not inspector.has_table("sessions"):
