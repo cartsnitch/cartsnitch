@@ -147,7 +147,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=sha,prefix=sha-
+            type=sha,prefix=sha-,format=long
             type=raw,value=${{ steps.calver.outputs.version }},enable=${{ github.ref == 'refs/heads/main' }}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
@@ -217,7 +217,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.AUTH_IMAGE_NAME }}
           tags: |
-            type=sha,prefix=sha-
+            type=sha,prefix=sha-,format=long
             type=raw,value=${{ steps.calver.outputs.version }},enable=${{ github.ref == 'refs/heads/main' }}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
@@ -274,7 +274,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.RECEIPTWITNESS_IMAGE_NAME }}
           tags: |
-            type=sha,prefix=sha-
+            type=sha,prefix=sha-,format=long
             type=raw,value=${{ steps.calver.outputs.version }},enable=${{ github.ref == 'refs/heads/main' }}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
@@ -331,7 +331,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}
           tags: |
-            type=sha,prefix=sha-
+            type=sha,prefix=sha-,format=long
             type=raw,value=${{ steps.calver.outputs.version }},enable=${{ github.ref == 'refs/heads/main' }}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
