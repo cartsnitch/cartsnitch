@@ -50,7 +50,13 @@ def run_migrations_online() -> None:
         # Create any tables defined in models but not yet created by migrations.
         # This bootstraps fresh databases that have no legacy schema.
         # checkfirst=True ensures this is a no-op on existing databases.
-        Base.metadata.create_all(bind=connection, checkfirst=True)
+        try:
+            Base.metadata.create_all(bind=connection, checkfirst=True)
+        except Exception as exc:
+            import logging
+            logging.getLogger("alembic.env").warning(
+                "create_all failed (non-fatal, migrations should handle table creation): %s", exc
+            )
 
 
 if context.is_offline_mode():
