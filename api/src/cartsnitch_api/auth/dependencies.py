@@ -4,7 +4,6 @@ Validates Better-Auth session tokens from cookies or Bearer header.
 Sessions are verified by querying the shared sessions table directly.
 """
 
-import hashlib
 from datetime import UTC, datetime
 from fastapi import Cookie, Depends, Header, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -27,14 +26,12 @@ SECURE_SESSION_COOKIE_NAME = "__Secure-better-auth.session_token"
 async def _validate_session_token(token: str, db: AsyncSession) -> str:
     """Validate a Better-Auth session token against the sessions table.
 
-    Better-Auth v1.2+ stores SHA-256(raw_token) in the DB.
-    The cookie/Bearer header carries the raw token, so we hash before lookup.
+    Better-Auth stores the raw token in the DB. The cookie/Bearer header
+    carries the same raw token, so we compare directly.
     """
-    token_hash = hashlib.sha256(token.encode()).hexdigest()
-
     result = await db.execute(
         text("SELECT user_id, expires_at FROM sessions WHERE token = :token"),
-        {"token": token_hash},
+        {"token": token},
     )
     row = result.first()
 

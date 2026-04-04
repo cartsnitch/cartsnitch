@@ -74,7 +74,6 @@ async def test_delete_me(client, auth_headers):
 @pytest.mark.asyncio
 async def test_expired_session_rejected(client, db_engine):
     """Expired sessions must be rejected."""
-    import hashlib
     import secrets
     import uuid
     from datetime import UTC, datetime, timedelta
@@ -83,7 +82,6 @@ async def test_expired_session_rejected(client, db_engine):
 
     user_id = str(uuid.uuid4())
     session_token = secrets.token_urlsafe(32)
-    token_hash = hashlib.sha256(session_token.encode()).hexdigest()
     now = datetime.now(UTC).isoformat()
     expired = (datetime.now(UTC) - timedelta(hours=1)).isoformat()
 
@@ -110,7 +108,7 @@ async def test_expired_session_rejected(client, db_engine):
             ),
             {
                 "id": str(uuid.uuid4()),
-                "token": token_hash,
+                "token": session_token,
                 "uid": user_id,
                 "ea": expired,
                 "ca": now,
