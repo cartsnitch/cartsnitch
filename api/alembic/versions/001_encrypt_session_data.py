@@ -33,6 +33,21 @@ def _is_fernet_token(value: str) -> bool:
 
 
 def upgrade() -> None:
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+
+    # Fresh DB — table created by Base.metadata.create_all with correct TEXT type
+    if not inspector.has_table("user_store_accounts"):
+        return
+
+    # Already migrated? Skip if session_data is already TEXT (not JSON)
+    cols = {c["name"]: c for c in inspector.get_columns("user_store_accounts")}
+    if "session_data" not in cols:
+        return
+    col_type = str(cols["session_data"]["type"]).lower()
+    if "text" in col_type and "json" not in col_type:
+        return  # already TEXT — nothing to do
+
     # Change column type from JSON to TEXT to hold Fernet ciphertext
     op.alter_column(
         "user_store_accounts",
@@ -43,7 +58,6 @@ def upgrade() -> None:
         postgresql_using="session_data::text",
     )
 
-    conn = op.get_bind()
     rows = conn.execute(
         text("SELECT id, session_data FROM user_store_accounts WHERE session_data IS NOT NULL")
     ).fetchall()

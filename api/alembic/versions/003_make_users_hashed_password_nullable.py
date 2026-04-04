@@ -19,8 +19,25 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.alter_column("users", "hashed_password", existing_type=sa.String(255), nullable=True)
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+
+    # Fresh DB — nothing to alter
+    if not inspector.has_table("users"):
+        return
+
+    cols = {c["name"]: c for c in inspector.get_columns("users")}
+    if "hashed_password" in cols and not cols["hashed_password"]["nullable"]:
+        op.alter_column("users", "hashed_password", existing_type=sa.String(255), nullable=True)
 
 
 def downgrade() -> None:
-    op.alter_column("users", "hashed_password", existing_type=sa.String(255), nullable=False)
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+
+    if not inspector.has_table("users"):
+        return
+
+    cols = {c["name"]: c for c in inspector.get_columns("users")}
+    if "hashed_password" in cols and cols["hashed_password"]["nullable"]:
+        op.alter_column("users", "hashed_password", existing_type=sa.String(255), nullable=False)

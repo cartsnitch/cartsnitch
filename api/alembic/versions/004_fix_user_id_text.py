@@ -25,7 +25,21 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # Step 1: Drop existing FK constraints
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+
+    # Fresh DB — no tables yet, nothing to convert
+    if not inspector.has_table("users"):
+        return
+
+    # Check if already TEXT (Base.metadata.create_all uses TEXT for fresh DB)
+    users_cols = {c["name"]: c for c in inspector.get_columns("users")}
+    if "id" in users_cols:
+        id_type = str(users_cols["id"]["type"]).lower()
+        if "text" in id_type and "uuid" not in id_type:
+            return  # already TEXT — nothing to do
+
+    # Step 1: Drop existing FK constraints (ignore if they don't exist)
     op.execute(text("ALTER TABLE user_store_accounts DROP CONSTRAINT IF EXISTS user_store_accounts_user_id_fkey"))
     op.execute(text("ALTER TABLE purchases DROP CONSTRAINT IF EXISTS purchases_user_id_fkey"))
 
