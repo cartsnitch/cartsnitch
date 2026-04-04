@@ -18,6 +18,15 @@ depends_on = None
 
 
 def upgrade() -> None:
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    # Guard: on a fresh DB Base.metadata.create_all creates users table with the column already present
+    if not inspector.has_table("users"):
+        return
+    existing_cols = [c["name"] for c in inspector.get_columns("users")]
+    if "email_inbound_token" in existing_cols:
+        return
+
     # Add column nullable first so existing rows can be backfilled
     op.add_column(
         "users",
@@ -25,11 +34,10 @@ def upgrade() -> None:
     )
 
     # Backfill existing users with unique tokens
-    connection = op.get_bind()
-    result = connection.execute(sa.text("SELECT id FROM users WHERE email_inbound_token IS NULL"))
+    result = conn.execute(sa.text("SELECT id FROM users WHERE email_inbound_token IS NULL"))
     for (user_id,) in result:
         token = secrets.token_urlsafe(16)
-        connection.execute(
+        conn.execute(
             sa.text("UPDATE users SET email_inbound_token = :token WHERE id = :id"),
             {"token": token, "id": user_id},
         )

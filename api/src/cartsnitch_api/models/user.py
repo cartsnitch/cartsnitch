@@ -4,7 +4,8 @@ import secrets
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, UniqueConstraint
+import sqlalchemy as sa
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from cartsnitch_api.constants import AccountStatus
@@ -23,13 +24,20 @@ class User(TimestampMixin, Base):
 
     id: Mapped[str] = mapped_column(Text, primary_key=True)
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
+    hashed_password: Mapped[str | None] = mapped_column(String(255), nullable=True)
     display_name: Mapped[str | None] = mapped_column(String(100))
+    email_verified: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default="false"
+    )
+    image: Mapped[str | None] = mapped_column(Text, nullable=True)
     email_inbound_token: Mapped[str] = mapped_column(
         String(22),
         nullable=False,
         unique=True,
         default=lambda: secrets.token_urlsafe(16),
+        server_default=sa.text(
+            "replace(replace(trim(trailing '=' from encode(gen_random_bytes(16), 'base64')), '+', '-'), '/', '_')"
+        ),
     )
 
     # Relationships

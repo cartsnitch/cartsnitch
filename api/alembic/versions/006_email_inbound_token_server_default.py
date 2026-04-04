@@ -15,6 +15,16 @@ depends_on = None
 
 
 def upgrade() -> None:
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    # Guard: on a fresh DB Base.metadata.create_all already sets the server_default
+    if not inspector.has_table("users"):
+        return
+    cols = {c["name"]: c for c in inspector.get_columns("users")}
+    if "email_inbound_token" not in cols:
+        return
+    if cols["email_inbound_token"].get("default") is not None:
+        return
     op.alter_column(
         "users",
         "email_inbound_token",
