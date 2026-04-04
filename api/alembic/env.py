@@ -6,7 +6,7 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-from cartsnitch_api.models import Base  # noqa: F401 — imports all models for autogenerate
+from cartsnitch_api.models.base import Base  # noqa: F401 — imports all models for autogenerate
 
 config = context.config
 if config.config_file_name is not None:
@@ -47,6 +47,10 @@ def run_migrations_online() -> None:
         context.configure(connection=connection, target_metadata=target_metadata)
         with context.begin_transaction():
             context.run_migrations()
+        # Create any tables defined in models but not yet created by migrations.
+        # This bootstraps fresh databases that have no legacy schema.
+        # checkfirst=True ensures this is a no-op on existing databases.
+        Base.metadata.create_all(bind=connection, checkfirst=True)
 
 
 if context.is_offline_mode():
