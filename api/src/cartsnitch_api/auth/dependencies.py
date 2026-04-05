@@ -19,12 +19,15 @@ bearer_scheme = HTTPBearer(auto_error=False)
 
 # Better-Auth session cookie name
 SESSION_COOKIE_NAME = "better-auth.session_token"
+# Secure prefix used by better-auth on HTTPS deployments
+SECURE_SESSION_COOKIE_NAME = "__Secure-better-auth.session_token"
 
 
 async def _validate_session_token(token: str, db: AsyncSession) -> str:
     """Validate a Better-Auth session token against the sessions table.
 
-    Returns the user_id (as str) if the session is valid and not expired.
+    Better-Auth stores the raw token in the DB. The cookie/Bearer header
+    carries the same raw token, so we compare directly.
     """
     result = await db.execute(
         text("SELECT user_id, expires_at FROM sessions WHERE token = :token"),
@@ -65,14 +68,17 @@ async def get_current_user(
     """
     token: str | None = None
 
-    # 1. Check session cookie
-    cookie_token = request.cookies.get(SESSION_COOKIE_NAME)
+    # 1. Check session cookie — prefer __Secure- variant (HTTPS) over plain (HTTP dev)
+    cookie_token = request.cookies.get(SECURE_SESSION_COOKIE_NAME) or request.cookies.get(SESSION_COOKIE_NAME)
     if cookie_token:
-        token = cookie_token
+        # Better-Auth cookie format is "token.sessionId" — extract just the token part
+        token = cookie_token.split(".")[0] if "." in cookie_token else cookie_token
 
     # 2. Fall back to Bearer header
     if not token and credentials:
-        token = credentials.credentials
+        # Callers might pass the compound value here too
+        raw = credentials.credentials
+        token = raw.split(".")[0] if "." in raw else raw
 
     if not token:
         raise HTTPException(

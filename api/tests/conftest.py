@@ -136,7 +136,8 @@ async def client(db_engine):
 async def _create_test_user_and_session(client: AsyncClient, db_engine, **user_overrides) -> tuple[dict, str]:
     """Create a test user and a valid session directly in the DB.
 
-    Returns (user_dict, session_token).
+    Returns (user_dict, session_token).  Better-Auth stores the raw token
+    in the DB, so we insert it as-is.
     """
     user_id = str(uuid.uuid4())
     email = user_overrides.get("email", "test@example.com")
