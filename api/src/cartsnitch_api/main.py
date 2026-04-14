@@ -5,6 +5,8 @@ from contextlib import asynccontextmanager
 from fastapi import APIRouter, FastAPI
 
 from cartsnitch_api.auth.routes import router as auth_router
+from cartsnitch_api.cache import cache_client
+from cartsnitch_api.database import dispose_engine
 from cartsnitch_api.middleware.cors import add_cors_middleware
 from cartsnitch_api.middleware.error_handler import add_error_handlers, add_error_monitor_middleware
 from cartsnitch_api.middleware.rate_limit import add_rate_limit_middleware
@@ -23,9 +25,10 @@ from cartsnitch_api.routes.user import router as user_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # TODO: initialize DB session pool, Redis connection, service clients
+    await cache_client.initialize()
     yield
-    # TODO: cleanup connections
+    await cache_client.close()
+    await dispose_engine()
 
 
 def create_app() -> FastAPI:
