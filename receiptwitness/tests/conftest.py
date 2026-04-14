@@ -1,11 +1,15 @@
 """Shared test fixtures."""
 
 import json
+import os
 from pathlib import Path
 
 import pytest
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
+
+os.environ.setdefault("RW_SESSION_ENCRYPTION_KEY", "test-secret-key-for-unit-tests-only-32bytes!")
+os.environ.setdefault("RW_MAILGUN_WEBHOOK_SIGNING_KEY", "test-mailgun-signing-key")
 
 
 @pytest.fixture
