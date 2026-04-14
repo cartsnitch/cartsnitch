@@ -1,6 +1,10 @@
 """Service-specific configuration for ReceiptWitness."""
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings
+
+
+_PLACEHOLDER_VALUES = {"change-me-in-production"}
 
 
 class ReceiptWitnessSettings(BaseSettings):
@@ -30,5 +34,34 @@ class ReceiptWitnessSettings(BaseSettings):
     # Mailgun inbound email webhook
     mailgun_webhook_signing_key: str = ""
 
+    @model_validator(mode="after")
+    def validate_required_vars(self):
+        errors = []
+        if not self.session_encryption_key or self.session_encryption_key in _PLACEHOLDER_VALUES:
+            errors.append(
+                "RW_SESSION_ENCRYPTION_KEY must be set to a secure value. "
+                'Generate one with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"'
+            )
+        if self.notifications_enabled and not self.resend_api_key:
+            errors.append(
+                "RW_RESEND_API_KEY must be set when RW_NOTIFICATIONS_ENABLED=true. "
+                "Get an API key from https://resend.com/api-keys"
+            )
+        if errors:
+            raise ValueError(
+                "ReceiptWitness startup failed — missing required config:\n"
+                + "\n".join(f"  - {e}" for e in errors)
+            )
+        return self
 
-settings = ReceiptWitnessSettings()
+
+class _LazySettings:
+    _instance: ReceiptWitnessSettings | None = None
+
+    def __getattr__(self, name: str):
+        if _LazySettings._instance is None:
+            _LazySettings._instance = ReceiptWitnessSettings()
+        return getattr(_LazySettings._instance, name)
+
+
+settings = _LazySettings()
