@@ -26,10 +26,14 @@ from cartsnitch_api.routes.user import router as user_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await cache_client.initialize()
+    from cartsnitch_api.database import init_db, close_db
+    from cartsnitch_api.cache import init_redis, close_redis
+
+    await init_db()
+    await init_redis()
     yield
-    await cache_client.close()
-    await dispose_engine()
+    await close_redis()
+    await close_db()
 
 
 def create_app() -> FastAPI:
