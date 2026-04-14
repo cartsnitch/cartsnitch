@@ -4,15 +4,24 @@ import { mockAuthRoutes } from '../fixtures';
 const uniqueEmail = () => `betty+e2e-${Date.now()}@cartsnitch.test`;
 
 test.describe('J1: Registration and Login', () => {
+<<<<<<< HEAD
   test('can register a new account and see check your email screen', async ({ page }) => {
     await mockAuthRoutes(page, false);
+=======
+  test('shows success message after registration', async ({ page }) => {
+>>>>>>> 2d8ba24 (fix: remove VITE_MOCK_AUTH bypass from production code)
     await page.goto('/register');
     await page.fill('[placeholder="Full Name"]', 'Betty Tester');
     await page.fill('[placeholder="Email"]', uniqueEmail());
     await page.fill('[placeholder="Password (min. 8 characters)"]', 'TestPass123!');
     await page.click('button[type="submit"]');
 
+<<<<<<< HEAD
     await expect(page.getByRole('heading', { name: /check your email/i })).toBeVisible();
+=======
+    // Registration now shows "Account created! Please sign in." message
+    await expect(page.locator('.bg-red-50')).toContainText('Account created! Please sign in.');
+>>>>>>> 2d8ba24 (fix: remove VITE_MOCK_AUTH bypass from production code)
   });
 
   test('shows validation error when registration fields are empty', async ({ page }) => {
@@ -30,8 +39,20 @@ test.describe('J1: Registration and Login', () => {
     await expect(page.getByRole('heading', { name: /cartsnitch/i })).toBeVisible();
   });
 
+<<<<<<< HEAD
   test('can sign in with credentials and land on dashboard', async ({ page }) => {
     await mockAuthRoutes(page, true);
+=======
+  test('can sign in with valid credentials', async ({ page }) => {
+    const email = uniqueEmail();
+    await page.goto('/register');
+    await page.fill('[placeholder="Full Name"]', 'Login Betty');
+    await page.fill('[placeholder="Email"]', email);
+    await page.fill('[placeholder="Password (min. 8 characters)"]', 'TestPass123!');
+    await page.click('button[type="submit"]');
+    await expect(page.locator('.bg-red-50')).toContainText('Account created! Please sign in.');
+
+>>>>>>> 2d8ba24 (fix: remove VITE_MOCK_AUTH bypass from production code)
     await page.goto('/login');
     await page.fill('[placeholder="Email"]', 'test@cartsnitch.test');
     await page.fill('[placeholder="Password"]', 'TestPass123!');
