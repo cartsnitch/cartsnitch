@@ -1,8 +1,40 @@
 """Redis/DragonflyDB caching helpers."""
 
+import logging
+from typing import TYPE_CHECKING
+
 import redis.asyncio as redis
+from redis.asyncio import Redis
 
 from cartsnitch_api.config import settings
+
+if TYPE_CHECKING:
+    from cartsnitch_api.config import Settings
+
+logger = logging.getLogger(__name__)
+
+_redis: "Redis | None" = None
+
+
+def get_settings() -> "Settings":
+    return settings
+
+
+async def init_redis() -> None:
+    global _redis
+    _redis = redis.from_url(settings.redis_url)
+    await _redis.ping()
+
+
+async def close_redis() -> None:
+    global _redis
+    if _redis is not None:
+        await _redis.aclose()
+        _redis = None
+
+
+def get_redis() -> Redis | None:
+    return _redis
 
 
 class CacheClient:
