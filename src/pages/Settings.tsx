@@ -153,7 +153,7 @@ export function Settings() {
               {copied ? 'Copied!' : 'Copy'}
             </button>
           </div>
-          <p className="mt-2 text-xs text-gray-400">
+          <p className="mt-2 text-xs text-gray-500">
             Supports Meijer, Kroger, and Target receipt emails.
           </p>
         </div>
