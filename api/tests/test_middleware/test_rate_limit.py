@@ -1,5 +1,6 @@
 """Tests for rate limiting middleware."""
 
+import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -7,11 +8,9 @@ import pytest
 from cartsnitch_api.config import settings
 from cartsnitch_api.middleware.rate_limit import (
     InMemorySlidingWindow,
-    RateLimitMiddleware,
+    RedisSlidingWindow,
     _get_client_ip,
     _get_rate_limit_key,
-    _init_redis,
-    _use_redis,
 )
 
 
@@ -43,6 +42,50 @@ class TestInMemorySlidingWindow:
         allowed_b, remaining, _ = limiter.is_allowed("key-b")
         assert allowed_b is True
         assert remaining == 1
+
+    def test_resets_after_window_expires(self):
+        limiter = InMemorySlidingWindow(max_requests=2, window_seconds=1)
+        for _ in range(2):
+            limiter.is_allowed("test-key")
+        allowed, remaining, _ = limiter.is_allowed("test-key")
+        assert allowed is False
+
+        time.sleep(1.1)
+        allowed, remaining, _ = limiter.is_allowed("test-key")
+        assert allowed is True
+        assert remaining == 1
+
+
+class TestGetClientIp:
+    def test_x_forwarded_for_single(self):
+        req = MagicMock()
+        req.headers = {"x-forwarded-for": "192.168.1.1"}
+        req.client = None
+        assert _get_client_ip(req) == "192.168.1.1"
+
+    def test_x_forwarded_for_multiple(self):
+        req = MagicMock()
+        req.headers = {"x-forwarded-for": "192.168.1.1, 10.0.0.1, 172.16.0.1"}
+        req.client = None
+        assert _get_client_ip(req) == "192.168.1.1"
+
+    def test_x_forwarded_for_with_port(self):
+        req = MagicMock()
+        req.headers = {"x-forwarded-for": "192.168.1.1:8080"}
+        req.client = None
+        assert _get_client_ip(req) == "192.168.1.1"
+
+    def test_no_forwarded_header(self):
+        req = MagicMock()
+        req.headers = {}
+        req.client.host = "127.0.0.1"
+        assert _get_client_ip(req) == "127.0.0.1"
+
+    def test_no_client(self):
+        req = MagicMock()
+        req.headers = {}
+        req.client = None
+        assert _get_client_ip(req) == "unknown"
 
 
 class TestGetRateLimitKey:
@@ -108,62 +151,41 @@ class TestGetRateLimitKey:
         assert raw_token not in key
 
 
-class TestGetClientIp:
-    def test_x_forwarded_for_single(self):
-        req = MagicMock()
-        req.headers = {"x-forwarded-for": "192.168.1.1"}
-        req.client = None
-        assert _get_client_ip(req) == "192.168.1.1"
-
-    def test_x_forwarded_for_multiple(self):
-        req = MagicMock()
-        req.headers = {"x-forwarded-for": "192.168.1.1, 10.0.0.1, 172.16.0.1"}
-        req.client = None
-        assert _get_client_ip(req) == "192.168.1.1"
-
-    def test_x_forwarded_for_with_port(self):
-        req = MagicMock()
-        req.headers = {"x-forwarded-for": "192.168.1.1:8080"}
-        req.client = None
-        assert _get_client_ip(req) == "192.168.1.1"
-
-    def test_no_forwarded_header(self):
-        req = MagicMock()
-        req.headers = {}
-        req.client.host = "127.0.0.1"
-        assert _get_client_ip(req) == "127.0.0.1"
-
-    def test_no_client(self):
-        req = MagicMock()
-        req.headers = {}
-        req.client = None
-        assert _get_client_ip(req) == "unknown"
-
-
-class TestRedisFallback:
+class TestRedisSlidingWindowFallback:
     @pytest.mark.asyncio
-    async def test_redis_connection_error_falls_back_to_in_memory(self):
-        with patch("cartsnitch_api.middleware.rate_limit._use_redis", True):
-            with patch("cartsnitch_api.middleware.rate_limit._redis_client") as mock_client:
-                mock_client.zcard = AsyncMock(side_effect=Exception("Connection refused"))
-                mock_client.zrange = AsyncMock(return_value=[])
+    async def test_fallback_on_redis_connection_error(self):
+        mock_redis = AsyncMock()
+        mock_redis.pipeline.return_value = AsyncMock()
+        pipe_mock = AsyncMock()
+        pipe_mock.execute.side_effect = Exception("Connection refused")
+        mock_redis.pipeline.return_value = pipe_mock
 
-                limiter = InMemorySlidingWindow(max_requests=3, window_seconds=60)
-                allowed, remaining, retry = await limiter.is_allowed("test-key")
-                assert allowed is True
-                assert remaining == 2
+        limiter = RedisSlidingWindow(mock_redis, max_requests=5, window_seconds=60)
+        allowed, remaining, retry = await limiter.is_allowed("test-key")
+        assert allowed is True
+        assert remaining == 4
+
+    @pytest.mark.asyncio
+    async def test_fallback_on_redis_error_during_pipeline(self):
+        mock_redis = AsyncMock()
+        pipe_mock = AsyncMock()
+        pipe_mock.execute.side_effect = Exception("Redis error")
+        mock_redis.pipeline.return_value = pipe_mock
+
+        limiter = RedisSlidingWindow(mock_redis, max_requests=3, window_seconds=60)
+        allowed, remaining, retry = await limiter.is_allowed("test-key")
+        assert allowed is True
+
+
+@pytest.mark.asyncio
+async def test_rate_limit_returns_429(client):
+    resp = await client.get("/public/inflation")
+    assert "x-ratelimit-limit" in resp.headers
+    assert "x-ratelimit-remaining" in resp.headers
 
 
 @pytest.mark.asyncio
 async def test_health_skips_rate_limit(client):
-    """Health endpoint should not have rate limit headers."""
     resp = await client.get("/health")
     assert resp.status_code == 200
-
-
-@pytest.mark.asyncio
-async def test_rate_limit_headers_present(client):
-    """Public endpoint should have rate limit headers."""
-    resp = await client.get("/public/inflation")
-    assert "x-ratelimit-limit" in resp.headers
-    assert "x-ratelimit-remaining" in resp.headers
+    assert "x-ratelimit-limit" not in resp.headers
