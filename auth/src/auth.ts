@@ -1,29 +1,19 @@
 import { betterAuth } from "better-auth";
 import bcrypt from "bcrypt";
 import pg from "pg";
-import { Resend } from "resend";
 
 const { Pool } = pg;
+
+export const pool = new Pool({
+  connectionString:
+    process.env.DATABASE_URL ??
+    "postgresql://cartsnitch:cartsnitch@localhost:5432/cartsnitch",
+});
 
 const secret = process.env.BETTER_AUTH_SECRET;
 if (!secret) {
   throw new Error("BETTER_AUTH_SECRET environment variable is required");
 }
-
-const databaseUrl = process.env.DATABASE_URL;
-if (!databaseUrl) {
-  console.warn(
-    "WARNING: DATABASE_URL is not set — using default localhost connection. " +
-    "Set DATABASE_URL for production deployments."
-  );
-}
-
-export const pool = new Pool({
-  connectionString: databaseUrl ?? "postgresql://cartsnitch:cartsnitch@localhost:5432/cartsnitch",
-});
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-const fromEmail = process.env.FROM_EMAIL || "CartSnitch <noreply@cartsnitch.com>";
 
 export const auth = betterAuth({
   database: pool,
@@ -42,19 +32,6 @@ export const auth = betterAuth({
       verify: async (data: { hash: string; password: string }) => {
         return bcrypt.compare(data.password, data.hash);
       },
-    },
-  },
-
-  emailVerification: {
-    sendOnSignUp: true,
-    autoSignInAfterVerification: true,
-    sendVerificationEmail: async ({ user, url }) => {
-      await resend.emails.send({
-        from: fromEmail,
-        to: user.email,
-        subject: "Verify your CartSnitch email",
-        html: `<p>Hi ${user.name || ""},</p><p>Click the link below to verify your email address:</p><p><a href="${url}">Verify Email</a></p><p>This link expires in 1 hour.</p><p>— CartSnitch</p>`,
-      });
     },
   },
 
