@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import bcrypt from "bcrypt";
 import pg from "pg";
+import { Resend } from "resend";
 
 const { Pool } = pg;
 
@@ -21,6 +22,9 @@ export const pool = new Pool({
   connectionString: databaseUrl ?? "postgresql://cartsnitch:cartsnitch@localhost:5432/cartsnitch",
 });
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+const fromEmail = process.env.FROM_EMAIL || "CartSnitch <noreply@cartsnitch.com>";
+
 export const auth = betterAuth({
   database: pool,
   basePath: "/auth",
@@ -38,6 +42,19 @@ export const auth = betterAuth({
       verify: async (data: { hash: string; password: string }) => {
         return bcrypt.compare(data.password, data.hash);
       },
+    },
+  },
+
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      await resend.emails.send({
+        from: fromEmail,
+        to: user.email,
+        subject: "Verify your CartSnitch email",
+        html: `<p>Hi ${user.name || ""},</p><p>Click the link below to verify your email address:</p><p><a href="${url}">Verify Email</a></p><p>This link expires in 1 hour.</p><p>— CartSnitch</p>`,
+      });
     },
   },
 
