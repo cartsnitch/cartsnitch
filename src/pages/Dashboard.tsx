@@ -93,7 +93,7 @@ function AuthenticatedDashboard({ userName }: { userName: string }) {
       {/* Price trend sparklines */}
       <section className="mt-6">
         <h2 className="mb-3 text-lg font-semibold text-gray-700">Price Trends</h2>
-        <div className="rounded-xl bg-white p-4 shadow-sm text-center text-sm text-gray-400">
+        <div className="rounded-xl bg-white p-4 shadow-sm text-center text-sm text-gray-600">
           Connect a store to see price trends
         </div>
       </section>
