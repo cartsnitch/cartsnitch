@@ -86,4 +86,14 @@ function mockAuthRoutes(page: Page, authenticated = false) {
   });
 }
 
+export function mockSessionPending(page: Page) {
+  page.route(/.*\/auth\/session.*/, async (route) => {
+    await route.fulfill({
+      status: 401,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "Unauthorized" }),
+    });
+  });
+}
+
 export { mockAuthRoutes };
