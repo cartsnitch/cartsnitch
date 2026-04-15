@@ -29,8 +29,6 @@ export function Login() {
         throw new Error(authError.message ?? 'Sign in failed')
       }
 
-      // After successful signIn, force a session fetch to confirm the cookie is set
-      // before navigating to the protected route
       const sessionResult = await authClient.getSession()
       if (sessionResult.data) {
         navigate('/')
