@@ -9,7 +9,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'VITE_MOCK_AUTH=true npm run dev',
+    command: 'npm run dev',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
   },
