@@ -129,9 +129,6 @@ def match_by_name(
     Loads all normalized products and computes Jaccard similarity.
     Returns the best match above the threshold, or None.
     """
-    # TODO: Use pg_trgm similarity index for production.
-    # Current approach loads all products into memory — acceptable for tests
-    # and small datasets, but will not scale.
     cleaned = clean_name(name)
     stmt = select(NormalizedProduct)
     products = session.execute(stmt).scalars().all()
