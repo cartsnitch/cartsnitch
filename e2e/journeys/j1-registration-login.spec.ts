@@ -10,7 +10,6 @@ test.describe('J1: Registration and Login', () => {
     await page.fill('[placeholder="Password (min. 8 characters)"]', 'TestPass123!');
     await page.click('button[type="submit"]');
 
-    // With VITE_MOCK_AUTH=true the app navigates to "/" on success
     await expect(page).toHaveURL('http://localhost:5173/');
     await expect(page.getByRole('heading', { name: /cart/i })).toBeVisible();
   });
