@@ -20,6 +20,7 @@ function mockAuthRoutes(page: Page, authenticated = false) {
       status: 200,
       contentType: "application/json",
       body: JSON.stringify({
+        token: null,
         user: {
           id: MOCK_USER_ID,
           email: "mock@cartsnitch.test",
@@ -27,15 +28,6 @@ function mockAuthRoutes(page: Page, authenticated = false) {
           emailVerified: true,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-        },
-        session: {
-          id: MOCK_SESSION_ID,
-          userId: MOCK_USER_ID,
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          ipAddress: null,
-          userAgent: null,
         },
       }),
     });
@@ -46,6 +38,8 @@ function mockAuthRoutes(page: Page, authenticated = false) {
       status: 200,
       contentType: "application/json",
       body: JSON.stringify({
+        redirect: false,
+        token: "mock_token_123",
         user: {
           id: MOCK_USER_ID,
           email: "mock@cartsnitch.test",
@@ -53,15 +47,6 @@ function mockAuthRoutes(page: Page, authenticated = false) {
           emailVerified: true,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-        },
-        session: {
-          id: MOCK_SESSION_ID,
-          userId: MOCK_USER_ID,
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          ipAddress: null,
-          userAgent: null,
         },
       }),
     });
@@ -75,7 +60,6 @@ function mockAuthRoutes(page: Page, authenticated = false) {
         body: JSON.stringify({
           session: {
             id: MOCK_SESSION_ID,
-            userId: MOCK_USER_ID,
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
