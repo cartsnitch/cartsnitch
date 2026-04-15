@@ -7,6 +7,7 @@ const port = parseInt(process.env.PORT ?? "3001", 10);
 const handler = toNodeHandler(auth);
 
 const server = createServer(async (req, res) => {
+  // Health check
   if (req.url === "/health" && req.method === "GET") {
     try {
       const client = await pool.connect();
