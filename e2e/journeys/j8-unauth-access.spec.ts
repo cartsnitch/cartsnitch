@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { mockAuthRoutes } from '../fixtures';
 
 test.describe('J8: Unauthenticated Access', () => {
   test('redirects /dashboard (/) to /login when not authenticated', async ({ page }) => {
-    // No session cookie — start fresh
+    mockAuthRoutes(page, false);
     await page.context().clearCookies();
     await page.goto('/');
 
@@ -11,6 +12,7 @@ test.describe('J8: Unauthenticated Access', () => {
   });
 
   test('redirects /purchases to /login when not authenticated', async ({ page }) => {
+    mockAuthRoutes(page, false);
     await page.context().clearCookies();
     await page.goto('/purchases');
 
@@ -19,6 +21,7 @@ test.describe('J8: Unauthenticated Access', () => {
   });
 
   test('redirects /products to /login when not authenticated', async ({ page }) => {
+    mockAuthRoutes(page, false);
     await page.context().clearCookies();
     await page.goto('/products');
 
@@ -27,6 +30,7 @@ test.describe('J8: Unauthenticated Access', () => {
   });
 
   test('redirects /coupons to /login when not authenticated', async ({ page }) => {
+    mockAuthRoutes(page, false);
     await page.context().clearCookies();
     await page.goto('/coupons');
 
@@ -35,15 +39,9 @@ test.describe('J8: Unauthenticated Access', () => {
   });
 
   test('shows loading spinner while auth session is pending', async ({ page }) => {
-    // Intercept but don't respond — session stays pending
+    mockAuthRoutes(page, false);
     await page.context().clearCookies();
-    await page.request.fetch('/api/auth/session', {
-      method: 'GET',
-    });
-
-    // Just navigate to a protected route — ProtectedRoute will show spinner while session is pending
     await page.goto('/purchases');
-    // Spinner is visible briefly; once resolved, should redirect to login
     await expect(page).toHaveURL(/\/login/, { timeout: 10_000 });
   });
 });
