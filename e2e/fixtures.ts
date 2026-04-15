@@ -14,8 +14,8 @@ export { expect } from "@playwright/test";
 const MOCK_USER_ID = "mock_user_123";
 const MOCK_SESSION_ID = "mock_session_456";
 
-function mockAuthRoutes(page: Page, authenticated = false) {
-  page.route(/.*\/auth\/sign-up\/email.*/, async (route) => {
+async function mockAuthRoutes(page: Page, authenticated = false) {
+  await page.route(/.*\/auth\/sign-up\/email.*/, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -33,7 +33,7 @@ function mockAuthRoutes(page: Page, authenticated = false) {
     });
   });
 
-  page.route(/.*\/auth\/sign-in\/email.*/, async (route) => {
+  await page.route(/.*\/auth\/sign-in\/email.*/, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -52,7 +52,7 @@ function mockAuthRoutes(page: Page, authenticated = false) {
     });
   });
 
-  page.route(/.*\/auth\/get-session.*/, async (route) => {
+  await page.route(/.*\/auth\/get-session.*/, async (route) => {
     if (authenticated) {
       await route.fulfill({
         status: 200,
@@ -86,8 +86,9 @@ function mockAuthRoutes(page: Page, authenticated = false) {
   });
 }
 
-export function mockSessionPending(page: Page) {
-  page.route(/.*\/auth\/session.*/, async (route) => {
+export async function mockSessionDelayed(page: Page, delayMs = 3000) {
+  await page.route(/.*\/auth\/get-session.*/, async (route) => {
+    await new Promise((r) => setTimeout(r, delayMs));
     await route.fulfill({
       status: 401,
       contentType: "application/json",
