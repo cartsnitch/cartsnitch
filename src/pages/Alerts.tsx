@@ -126,7 +126,7 @@ function AlertCard({
           </Link>
           <div className="mt-1 flex items-center gap-2">
             <span className="text-xs text-gray-500">Target: ${alert.targetPrice.toFixed(2)}</span>
-            <span className="text-xs text-gray-400">&middot;</span>
+            <span className="text-xs text-gray-500">&middot;</span>
             <span className={`text-xs font-medium ${isBelow ? 'text-green-700' : 'text-gray-500'}`}>
               Now: ${alert.currentPrice.toFixed(2)}
             </span>
@@ -145,7 +145,7 @@ function AlertCard({
           )}
           <button
             onClick={() => onDelete(alert.id)}
-            className="min-h-12 min-w-12 rounded-lg p-2 text-gray-400 active:bg-gray-100"
+            className="min-h-12 min-w-12 rounded-lg p-2 text-gray-500 active:bg-gray-100"
             aria-label="Delete alert"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
