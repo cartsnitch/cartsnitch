@@ -1,7 +1,10 @@
 """Rate limiting middleware for public and authenticated endpoints.
 
-Uses in-memory sliding window as fallback, Redis/DragonflyDB when available.
+Uses DragonflyDB (Redis-protocol-compatible) sorted sets for distributed
+sliding window rate limiting across multiple API replicas. Falls back to
+in-memory counters for local development when DragonflyDB is unavailable.
 Per-IP limiting on public endpoints, per-token limiting on authenticated endpoints.
+Stricter per-IP limits on auth endpoints (login, register) to prevent brute-force.
 """
 
 import hashlib
