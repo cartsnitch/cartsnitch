@@ -15,6 +15,7 @@ import { AccountLinking } from './pages/AccountLinking.tsx'
 import { Login } from './pages/Login.tsx'
 import { Register } from './pages/Register.tsx'
 import { ForgotPassword } from './pages/ForgotPassword.tsx'
+import { VerifyEmail } from './pages/VerifyEmail.tsx'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,6 +48,7 @@ export default function App() {
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
+          <Route path="verify-email" element={<VerifyEmail />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
