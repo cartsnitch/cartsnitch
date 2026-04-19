@@ -31,11 +31,12 @@ export function Login() {
         throw new Error(authError.message ?? 'Sign in failed')
       }
 
-      // After successful signIn, force a session fetch to confirm the cookie is set
-      // before navigating to the protected route
+      // After successful signIn, force a full page reload so Better-Auth's
+      // useSession() reinitializes with fresh cookie-backed session state.
+      // Using React Router's navigate() races with Better-Auth's internal update.
       const sessionResult = await authClient.getSession()
       if (sessionResult.data) {
-        navigate('/')
+        window.location.href = '/'
       } else {
         setError('Sign in failed. Please try again.')
       }
