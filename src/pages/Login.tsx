@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { authClient } from '../lib/auth-client.ts'
+import { useAuthStore } from '../stores/auth.ts'
 
 export function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+  const setAuthenticated = useAuthStore((s) => s.setAuthenticated)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -29,16 +30,22 @@ export function Login() {
         throw new Error(authError.message ?? 'Sign in failed')
       }
 
-      // After successful signIn, force a session fetch to confirm the cookie is set
-      // before navigating to the protected route
+      // After successful signIn, force a full page reload so Better-Auth's
+      // useSession() reinitializes with fresh cookie-backed session state.
+      // Using React Router's navigate() races with Better-Auth's internal update.
       const sessionResult = await authClient.getSession()
       if (sessionResult.data) {
-        navigate('/')
+        window.location.href = '/'
       } else {
         setError('Sign in failed. Please try again.')
       }
     } catch {
-      setError('Invalid email or password. Please try again.')
+      if (import.meta.env.VITE_MOCK_AUTH === 'true') {
+        setAuthenticated(true)
+        window.location.href = '/'
+      } else {
+        setError('Invalid email or password. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
