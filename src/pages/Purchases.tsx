@@ -97,7 +97,7 @@ export function Purchases() {
               </div>
 
               {/* Item preview */}
-              <p className="mt-2 truncate text-xs text-gray-400">
+              <p className="mt-2 truncate text-xs text-gray-500">
                 {purchase.items
                   .slice(0, 3)
                   .map((i) => i.name)
