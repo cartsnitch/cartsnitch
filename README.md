@@ -34,7 +34,7 @@ CartSnitch is a polyglot microservices platform. The monorepo contains the front
            ▼                    ▼                    ▼
 ┌──────────────────┐  ┌─────────────────┐  ┌─────────────────────┐
 │   Auth Service   │  │   API Gateway   │  │  ReceiptWitness     │
-│  (Better-Auth)   │  │    (Node.js)    │  │   (Python/Scrapers) │
+│  (Better-Auth)   │  │    (Python/FastAPI)    │  │   (Python/Scrapers) │
 │  Session mgmt   │  │  REST + proxy   │  │  Purchase ingestion  │
 └────────┬─────────┘  └────────┬────────┘  └──────────┬──────────┘
          │                      │                        │
@@ -174,7 +174,7 @@ We welcome contributions. Please follow the workflow below.
 
 - Branch from `dev`
 - Use prefix: `feature/`, `fix/`, `docs/`, `chore/`
-- Examples: `feature/shopping-list优化`, `fix/price-chart-zoom`
+- Examples: `feature/shopping-list-optimization`, `fix/price-chart-zoom`
 
 ### Commit Convention
 
