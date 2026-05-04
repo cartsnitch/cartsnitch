@@ -1,14 +1,12 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { authClient } from '../lib/auth-client.ts'
-import { useAuthStore } from '../stores/auth.ts'
 
 export function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const setAuthenticated = useAuthStore((s) => s.setAuthenticated)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -40,12 +38,7 @@ export function Login() {
         setError('Sign in failed. Please try again.')
       }
     } catch {
-      if (import.meta.env.VITE_MOCK_AUTH === 'true') {
-        setAuthenticated(true)
-        window.location.href = '/'
-      } else {
-        setError('Invalid email or password. Please try again.')
-      }
+      setError('Invalid email or password. Please try again.')
     } finally {
       setLoading(false)
     }
