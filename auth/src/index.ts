@@ -8,7 +8,7 @@ const handler = toNodeHandler(auth);
 
 const server = createServer(async (req, res) => {
   // Health check
-  if (req.url === "/health" && req.method === "GET") {
+  if ((req.url === "/health" || req.url === "/auth/health") && req.method === "GET") {
     try {
       const client = await pool.connect();
       try {
@@ -20,7 +20,7 @@ const server = createServer(async (req, res) => {
         client.release();
       }
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ status: "ok", db: "connected" }));
+      res.end(JSON.stringify({ status: "ok", db: "reachable" }));
     } catch {
       res.writeHead(503, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ status: "error", db: "unreachable" }));
@@ -28,7 +28,7 @@ const server = createServer(async (req, res) => {
     return;
   }
 
-  // All /auth/* routes handled by Better-Auth
+  // All other routes handled by Better-Auth (returns 404 for unknown paths)
   await handler(req, res);
 });
 
