@@ -62,7 +62,7 @@ export function Coupons() {
                   <p className="mt-0.5 text-xs text-gray-500">{coupon.storeName}</p>
                   <p
                     className={`mt-1 text-xs ${
-                      expiringSoon ? 'font-medium text-orange-600' : 'text-gray-400'
+                      expiringSoon ? 'font-medium text-orange-600' : 'text-gray-500'
                     }`}
                   >
                     Expires{' '}
