@@ -89,7 +89,7 @@ export function StoreComparison() {
                 {pp.price === lowestPrice ? (
                   <span className="text-xs font-medium text-green-600">Best price</span>
                 ) : (
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-gray-500">
                     +${(pp.price - lowestPrice).toFixed(2)}
                   </span>
                 )}
@@ -99,7 +99,7 @@ export function StoreComparison() {
         ))}
       </div>
 
-      <p className="mt-6 text-center text-xs text-gray-400">
+      <p className="mt-6 text-center text-xs text-gray-500">
         Prices last verified from store loyalty card data. Map view coming soon.
       </p>
     </div>
