@@ -1,9 +1,11 @@
 import { test, expect } from '@playwright/test';
+import { mockAuthRoutes } from '../fixtures';
 
 const uniqueEmail = () => `betty+e2e-${Date.now()}@cartsnitch.test`;
 
 test.describe('J1: Registration and Login', () => {
   test('shows success message after registration', async ({ page }) => {
+    await mockAuthRoutes(page, false);
     await page.goto('/register');
     await page.fill('[placeholder="Full Name"]', 'Betty Tester');
     await page.fill('[placeholder="Email"]', uniqueEmail());
@@ -30,6 +32,7 @@ test.describe('J1: Registration and Login', () => {
   });
 
   test('can sign in with valid credentials', async ({ page }) => {
+    await mockAuthRoutes(page, true);
     const email = uniqueEmail();
     await page.goto('/register');
     await page.fill('[placeholder="Full Name"]', 'Login Betty');
