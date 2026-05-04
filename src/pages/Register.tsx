@@ -8,9 +8,6 @@ export function Register() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [registrationComplete, setRegistrationComplete] = useState(false)
-  const [resendLoading, setResendLoading] = useState(false)
-  const [resendMessage, setResendMessage] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -38,55 +35,12 @@ export function Register() {
         throw new Error(authError.message ?? 'Registration failed')
       }
 
-      setRegistrationComplete(true)
+      setError('Account created! Please sign in.')
     } catch {
       setError('Registration failed. Please try again.')
     } finally {
       setLoading(false)
     }
-  }
-
-  async function handleResendVerification() {
-    setResendLoading(true)
-    setResendMessage('')
-    try {
-      const { error } = await authClient.sendVerificationEmail({ email })
-      if (error) {
-        setResendMessage('Failed to resend. Please try again.')
-      } else {
-        setResendMessage('Verification email sent!')
-      }
-    } finally {
-      setResendLoading(false)
-    }
-  }
-
-  if (registrationComplete) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-4">
-        <h1 className="mb-2 text-3xl font-bold text-gray-900">Check your email</h1>
-        <p className="mb-8 text-sm text-gray-500">
-          We sent a verification link to {email}. Click it to activate your account.
-        </p>
-        <button
-          type="button"
-          onClick={handleResendVerification}
-          disabled={resendLoading}
-          className="min-h-12 rounded-xl bg-brand-blue px-6 py-3 text-base font-medium text-white active:bg-brand-blue/90 disabled:opacity-60"
-        >
-          {resendLoading ? 'Sending...' : 'Resend email'}
-        </button>
-        {resendMessage && (
-          <p className="mt-4 text-sm text-gray-500">{resendMessage}</p>
-        )}
-        <p className="mt-6 text-sm text-gray-500">
-          Already have an account?{' '}
-          <Link to="/login" className="text-brand-blue">
-            Sign in
-          </Link>
-        </p>
-      </div>
-    )
   }
 
   return (
