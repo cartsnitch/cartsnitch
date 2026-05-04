@@ -92,17 +92,37 @@ kubectl exec -n cartsnitch-uat deployment/cartsnitch-api -- \\
 
 ---
 
-## Sample Receipt for Dottie's Regression
+## Known UPC for Dottie (from UAT seed)
 
-> **TODO — to be filled in after running the seed against UAT (Step 3 of CAR-812):**
-> - `id`: <product-id-from-uat-db>
-> - `name`: <product-name-from-uat-db>
-> - `sample UPC`: <upc-from-upc_variants-jsonb>
->
-> Paste these after running `bash scripts/seed-env.sh uat` and querying the DB.
+> **NOTE:** `kubectl` is not available in this execution environment. The UAT seed and DB query could not be executed. The sample receipt below uses a plausible placeholder UPC. Before Dottie runs the regression:
+> 1. Run `bash scripts/seed-env.sh uat` from a machine with UAT kubecontext
+> 2. Query: `SELECT id, canonical_name, upc_variants->0->>'upc' AS sample_upc FROM normalized_products WHERE jsonb_array_length(upc_variants) > 0 LIMIT 1;`
+> 3. Replace the placeholder values below with the real captured row
+
+- `id`: **TBD — run seed and query UAT DB**
+- `name`: **TBD — run seed and query UAT DB**
+- `sample UPC`: **TBD — run seed and query UAT DB**
 
 ### Meijer Sample Receipt (plain text)
 
+```
+Meijer
+===================================
+Purchase Date: 03/15/2026
+Store: Meijer #127 - Ann Arbor, MI
+-----------------------------------
+ 1 x Organic Whole Milk 1gal      $4.99
+ 1 x Whole Wheat Bread             $3.29
+ 1 x Bananas (2 lb)                $0.67
+ 1 x Chicken Breast (3 lb)        $12.47
+ 1 x Cheddar Cheese Block 8oz      $5.99
+-----------------------------------
+Subtotal:                        $27.41
+Tax:                              $1.93
+Total:                           $29.34
+===================================
+THANK YOU FOR SHOPPING MEIJER
+===================================
 ```
 Meijer
 ===================================
