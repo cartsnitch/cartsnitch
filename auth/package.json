@@ -7,8 +7,7 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "generate": "npx @better-auth/cli generate",
-    "test": "node --test src/__tests__/*.test.ts"
+    "generate": "npx @better-auth/cli generate"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
