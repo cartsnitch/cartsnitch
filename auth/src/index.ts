@@ -28,11 +28,8 @@ const server = createServer(async (req, res) => {
     return;
   }
 
-  // All /auth/* routes handled by Better-Auth
-  if (req.url?.startsWith("/auth")) {
-    await handler(req, res);
-    return;
-  }
+  // All other routes handled by Better-Auth (returns 404 for unknown paths)
+  await handler(req, res);
 });
 
 server.listen(port, "0.0.0.0", () => {

@@ -97,4 +97,21 @@ describe('Auth health endpoint', () => {
     equal(status, 503);
     equal(body, '{"status":"error","db":"unreachable"}');
   });
+
+  it('returns a terminal response for unknown paths (no hang)', async () => {
+    const poolMock = { connect: async () => ({ query: async () => {}, release: () => {} }) };
+    const { port, close } = await startHealthServer(poolMock);
+
+    const result = await new Promise<{ status: number }>((resolve) => {
+      const req = http.get(`http://localhost:${port}/`, (res) => {
+        res.resume();
+        res.on('end', () => resolve({ status: res.statusCode ?? 0 }));
+      });
+      req.on('error', () => resolve({ status: 0 }));
+      setTimeout(() => resolve({ status: -1 }), 1000);
+    });
+    close();
+
+    equal(result.status !== -1, true, 'Unknown path must return a terminal response within 1s');
+  });
 });
