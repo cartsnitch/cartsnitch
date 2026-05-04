@@ -50,14 +50,9 @@ MatchResult created with method=upc, confidence=1.0 for known UPCs
 
 ### Email Address Format
 
-Each user is assigned a unique inbound token. The email address format depends on the environment:
+Each user is assigned a unique inbound token. The receipt submission email address is shown in **Settings → Receipt Email** on the UI:
 
-| Environment | Domain |
-|-------------|--------|
-| Dev | `cartsnitch.dev.farh.net` |
-| UAT | `cartsnitch.uat.farh.net` |
-
-**Address:** `<email_inbound_token>@cartsnitch.<env>.farh.net`
+**Address:** `receipts+<email_inbound_token>@receipts.cartsnitch.com`
 
 To find a user's token in the UAT database (requires `kubectl` access to `cartsnitch-uat`):
 
@@ -83,10 +78,10 @@ kubectl exec -n cartsnitch-uat deployment/cartsnitch-api -- \\
 ### Steps
 
 1. **Obtain the test user's inbound token.**
-   Use the UAT Settings → Account page in the UI, or query the DB directly (see above).
+   Use the UAT Settings → Receipt Email page in the UI to see the full address `receipts+<token>@receipts.cartsnitch.com`, or query the DB directly (see above).
 
 2. **Compose the email.**
-   Send to: `<token>@cartsnitch.uat.farh.net`
+   Send to: the address shown in Settings → Receipt Email
    Subject: anything
    Body: plain-text or HTML receipt content
 

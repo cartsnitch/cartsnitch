@@ -22,8 +22,10 @@
 set -euo pipefail
 
 # --- Config -------------------------------------------------------------------
-ENV="${1:-dev}"
-shift || true
+ENV="dev"
+if [[ "${1:-}" == "dev" || "${1:-}" == "uat" ]]; then
+  ENV="$1"; shift
+fi
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
