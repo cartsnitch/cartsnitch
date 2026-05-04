@@ -4,7 +4,7 @@ import { mockAuthRoutes } from '../fixtures';
 const uniqueEmail = () => `betty+e2e-${Date.now()}@cartsnitch.test`;
 
 test.describe('J1: Registration and Login', () => {
-  test('can register a new account and see check your email screen', async ({ page }) => {
+  test('shows success message after registration', async ({ page }) => {
     await mockAuthRoutes(page, false);
     await page.goto('/register');
     await page.fill('[placeholder="Full Name"]', 'Betty Tester');
@@ -12,7 +12,8 @@ test.describe('J1: Registration and Login', () => {
     await page.fill('[placeholder="Password (min. 8 characters)"]', 'TestPass123!');
     await page.click('button[type="submit"]');
 
-    await expect(page.getByRole('heading', { name: /check your email/i })).toBeVisible();
+    // Registration now shows "Account created! Please sign in." message
+    await expect(page.locator('.bg-red-50')).toContainText('Account created! Please sign in.');
   });
 
   test('shows validation error when registration fields are empty', async ({ page }) => {
@@ -30,8 +31,16 @@ test.describe('J1: Registration and Login', () => {
     await expect(page.getByRole('heading', { name: /cartsnitch/i })).toBeVisible();
   });
 
-  test('can sign in with credentials and land on dashboard', async ({ page }) => {
+  test('can sign in with valid credentials', async ({ page }) => {
     await mockAuthRoutes(page, true);
+    const email = uniqueEmail();
+    await page.goto('/register');
+    await page.fill('[placeholder="Full Name"]', 'Login Betty');
+    await page.fill('[placeholder="Email"]', email);
+    await page.fill('[placeholder="Password (min. 8 characters)"]', 'TestPass123!');
+    await page.click('button[type="submit"]');
+    await expect(page.locator('.bg-red-50')).toContainText('Account created! Please sign in.');
+
     await page.goto('/login');
     await page.fill('[placeholder="Email"]', 'test@cartsnitch.test');
     await page.fill('[placeholder="Password"]', 'TestPass123!');
