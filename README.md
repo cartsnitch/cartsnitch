@@ -34,7 +34,7 @@ CartSnitch is a polyglot microservices platform. The monorepo contains the front
            ▼                    ▼                    ▼
 ┌──────────────────┐  ┌─────────────────┐  ┌─────────────────────┐
 │   Auth Service   │  │   API Gateway   │  │  ReceiptWitness     │
-│  (Better-Auth)   │  │    (Python/FastAPI)    │  │   (Python/Scrapers) │
+│  (Better-Auth)   │  │ (Python/FastAPI)│  │   (Python/Scrapers) │
 │  Session mgmt   │  │  REST + proxy   │  │  Purchase ingestion  │
 └────────┬─────────┘  └────────┬────────┘  └──────────┬──────────┘
          │                      │                        │
