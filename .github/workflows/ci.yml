@@ -20,6 +20,7 @@ env:
   IMAGE_NAME: cartsnitch/cartsnitch
   RECEIPTWITNESS_IMAGE_NAME: cartsnitch/receiptwitness
   API_IMAGE_NAME: cartsnitch/api
+  AUTH_IMAGE_NAME: cartsnitch/auth
 
 jobs:
   lint:
@@ -381,9 +382,101 @@ jobs:
             APT_CACHE_BUST=${{ github.run_id }}
           cache-from: type=gha
 
+  build-and-push-auth:
+    runs-on: runners-cartsnitch
+    if: github.event_name == 'push'
+    needs: [lint, test]
+    outputs:
+      calver_tag: ${{ steps.calver.outputs.version }}
+      sha_tag: sha-${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate CalVer tag
+        id: calver
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          DATE_TAG=$(date -u +%Y.%m.%d)
+          EXISTING=$(git tag -l "v${DATE_TAG}*" | sort -V | tail -1)
+          if [ -z "$EXISTING" ]; then VERSION="$DATE_TAG"
+          elif [ "$EXISTING" = "v${DATE_TAG}" ]; then VERSION="${DATE_TAG}.2"
+          else BUILD_NUM=$(echo "$EXISTING" | sed "s/v${DATE_TAG}\.//"); VERSION="${DATE_TAG}.$((BUILD_NUM + 1))"; fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GHCR
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (auth)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.AUTH_IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-,format=long
+            type=raw,value=${{ steps.calver.outputs.version }},enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./auth
+          file: ./auth/Dockerfile
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            APT_CACHE_BUST=${{ github.run_id }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Scan auth image for vulnerabilities
+        uses: anchore/scan-action@v5
+        id: scan
+        env:
+          GRYPE_CONFIG: .grype.yaml
+        with:
+          image: "${{ env.REGISTRY }}/${{ env.AUTH_IMAGE_NAME }}:sha-${{ github.sha }}"
+          fail-build: true
+          severity-cutoff: high
+          only-fixed: "true"
+          output-format: sarif
+
+      - name: Upload auth scan results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}
+
+      - name: Push Docker image
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@v6
+        with:
+          context: ./auth
+          file: ./auth/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            APT_CACHE_BUST=${{ github.run_id }}
+          cache-from: type=gha
+
   deploy-dev:
     runs-on: runners-cartsnitch
-    needs: [build-and-push, build-and-push-receiptwitness, build-and-push-api]
+    needs: [build-and-push, build-and-push-receiptwitness, build-and-push-api, build-and-push-auth]
     if: always() && !cancelled() && github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')
     steps:
       - name: Generate GitHub App token
@@ -454,6 +547,21 @@ jobs:
           cd infra/apps/overlays/dev
           kustomize edit set image ghcr.io/cartsnitch/api:${{ steps.api_tag.outputs.tag }}
 
+      - name: Determine image tag for auth
+        id: auth_tag
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "tag=${{ needs.build-and-push-auth.outputs.calver_tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ needs.build-and-push-auth.outputs.sha_tag }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update auth image tag
+        if: needs.build-and-push-auth.result == 'success'
+        run: |
+          cd infra/apps/overlays/dev
+          kustomize edit set image ghcr.io/cartsnitch/auth:${{ steps.auth_tag.outputs.tag }}
+
       - name: Commit and push to infra
         run: |
           cd infra
@@ -461,13 +569,13 @@ jobs:
           git config user.email "cartsnitch-ci[bot]@users.noreply.github.com"
           git add apps/overlays/dev/kustomization.yaml
           git diff --cached --quiet && echo "No image changes to deploy" && exit 0
-          git commit -m "ci(dev): update cartsnitch, receiptwitness, and api images"
+          git commit -m "ci(dev): update cartsnitch, receiptwitness, api, and auth images"
           git pull --rebase origin main
           git push origin main
 
   deploy-uat:
     runs-on: runners-cartsnitch
-    needs: [build-and-push, build-and-push-receiptwitness, build-and-push-api]
+    needs: [build-and-push, build-and-push-receiptwitness, build-and-push-api, build-and-push-auth]
     if: always() && !cancelled() && github.event_name == 'push' && (github.ref == 'refs/heads/uat' || github.ref == 'refs/heads/main')
     steps:
       - name: Generate GitHub App token
@@ -538,6 +646,21 @@ jobs:
           cd infra/apps/overlays/uat
           kustomize edit set image ghcr.io/cartsnitch/api:${{ steps.api_tag.outputs.tag }}
 
+      - name: Determine image tag for auth
+        id: auth_tag
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "tag=${{ needs.build-and-push-auth.outputs.calver_tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ needs.build-and-push-auth.outputs.sha_tag }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update auth image tag
+        if: needs.build-and-push-auth.result == 'success'
+        run: |
+          cd infra/apps/overlays/uat
+          kustomize edit set image ghcr.io/cartsnitch/auth:${{ steps.auth_tag.outputs.tag }}
+
       - name: Commit and push to infra
         run: |
           cd infra
@@ -545,6 +668,6 @@ jobs:
           git config user.email "cartsnitch-ci[bot]@users.noreply.github.com"
           git add apps/overlays/uat/kustomization.yaml
           git diff --cached --quiet && echo "No image changes to deploy" && exit 0
-          git commit -m "ci(uat): update cartsnitch, receiptwitness, and api images"
+          git commit -m "ci(uat): update cartsnitch, receiptwitness, api, and auth images"
           git pull --rebase origin main
           git push origin main
